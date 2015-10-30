@@ -1,8 +1,10 @@
 package me.elliottolson.bowspleef;
 
 import me.elliottolson.bowspleef.commands.CommandProcessor;
-import me.elliottolson.bowspleef.util.Metrics;
+import me.elliottolson.bowspleef.manager.ConfigurationManager;
+import me.elliottolson.bowspleef.manager.StatisticCollection;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 /**
  * Copyright Elliott Olson (c) 2015. All Rights Reserved.
@@ -22,6 +24,11 @@ public class BowSpleef extends JavaPlugin {
         instance = this;
 
         /////////////////////////////////////////
+        //               Config                //
+        /////////////////////////////////////////
+        ConfigurationManager.loadConfig();
+
+        /////////////////////////////////////////
         //               Commands              //
         /////////////////////////////////////////
         getCommand("bs").setExecutor(new CommandProcessor());
@@ -34,6 +41,7 @@ public class BowSpleef extends JavaPlugin {
 
         try {
             metrics = new Metrics(this);
+            new StatisticCollection(this).createGraph();
             metrics.start();
         } catch (Exception e){
             e.printStackTrace();
@@ -49,5 +57,9 @@ public class BowSpleef extends JavaPlugin {
 
     public static BowSpleef getInstance() {
         return instance;
+    }
+
+    public Metrics getMetrics() {
+        return metrics;
     }
 }

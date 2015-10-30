@@ -1,5 +1,7 @@
 package me.elliottolson.bowspleef.game;
 
+import me.elliottolson.bowspleef.manager.ConfigurationManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,14 @@ public class GameManager {
 
     public void setup(){
 
+    }
+
+    public void loadGames(){
+        games.clear();
+
+        for (String name : ConfigurationManager.getArenaConfig().getStringList("list.arenas")){
+            games.add(new Game(name));
+        }
     }
 
 

@@ -1,6 +1,7 @@
 package me.elliottolson.bowspleef;
 
 import me.elliottolson.bowspleef.commands.CommandProcessor;
+import me.elliottolson.bowspleef.game.GameManager;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.manager.StatisticCollection;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,7 +38,6 @@ public class BowSpleef extends JavaPlugin {
         /////////////////////////////////////////
         //              Listeners              //
         /////////////////////////////////////////
-
 
         try {
             metrics = new Metrics(this);

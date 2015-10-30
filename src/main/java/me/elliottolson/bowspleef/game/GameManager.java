@@ -1,6 +1,7 @@
 package me.elliottolson.bowspleef.game;
 
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,15 @@ public class GameManager {
         for (String name : ConfigurationManager.getArenaConfig().getStringList("list.arenas")){
             games.add(new Game(name));
         }
+    }
+
+    public Game getPlayerGame(Player player){
+        for (Game game : games){
+            if (game.getPlayers().contains(player) || game.getSpectators().contains(player)){
+                return game;
+            }
+        }
+        return null;
     }
 
 

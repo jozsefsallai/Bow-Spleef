@@ -1,0 +1,6 @@
+name: BowSpleef
+author: ElliottOlson
+version: 1.3-SNAPSHOT
+description: ${project.description}
+main: me.elliottolson.BowSpleef.BowSpleef
+

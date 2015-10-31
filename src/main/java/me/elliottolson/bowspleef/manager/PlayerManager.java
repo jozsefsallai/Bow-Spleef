@@ -1,5 +1,7 @@
 package me.elliottolson.bowspleef.manager;
 
+import me.elliottolson.bowspleef.kit.common.Kit;
+import me.elliottolson.bowspleef.kit.common.KitManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -17,6 +19,14 @@ import java.util.Map;
  * agreements with you, the third party.
  */
 public class PlayerManager {
+
+    public static Kit getKit(Player player){
+        if (ConfigurationManager.getPlayerConfig().contains(player.getName())){
+            String kit = ConfigurationManager.getPlayerConfig().getString(player.getName() + ".kit");
+            return KitManager.getKit(kit);
+        }
+        return null;
+    }
 
     public static void saveInventory(Player player){
         Inventory inventory = player.getInventory();

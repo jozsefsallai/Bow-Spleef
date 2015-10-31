@@ -1,6 +1,7 @@
 package me.elliottolson.bowspleef.game;
 
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
+import me.elliottolson.bowspleef.manager.PlayerManager;
 import me.elliottolson.bowspleef.util.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -76,7 +77,7 @@ public class Game {
             ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.z", returnLocation.getBlockZ());
             ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.world", returnLocation.getWorld().getName());
 
-            //TODO: Save Inventory
+            PlayerManager.saveInventory(player);
 
             player.getInventory().clear();
             player.updateInventory();

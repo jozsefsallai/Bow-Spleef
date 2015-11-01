@@ -285,7 +285,57 @@ public class Game {
     }
 
     public void setup() {
+        
+    }
 
+    public void setPos1(Player player){
+        if (!player.hasPermission("bowspleef.admin.game.pos1")){
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to set this location.");
+            return;
+        }
+
+        pos1 = player.getLocation();
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Location set.");
+    }
+
+    public void setPos2(Player player){
+        if (!player.hasPermission("bowspleef.admin.game.pos2")){
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to set this location.");
+            return;
+        }
+
+        pos2 = player.getLocation();
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Location set.");
+    }
+
+    public void setLobby(Player player){
+        if (!player.hasPermission("bowspleef.admin.game.lobby")){
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to set this location.");
+            return;
+        }
+
+        lobby = player.getLocation();
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Location set.");
+    }
+
+    public void setGameSpawn(Player player){
+        if (!player.hasPermission("bowspleef.admin.game.game-spawn")){
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to set this location.");
+            return;
+        }
+
+        spawn = player.getLocation();
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Location set.");
+    }
+
+    public void setSpectatorSpawn(Player player){
+        if (!player.hasPermission("bowspleef.admin.game.spectator-spawn")){
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to set this location.");
+            return;
+        }
+
+        spectatorSpawn = player.getLocation();
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Location set.");
     }
 
     public void msgAll(MessageManager.MessageType type, String message){

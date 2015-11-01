@@ -8,10 +8,8 @@ import me.elliottolson.bowspleef.api.GameVoteEvent;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.manager.PlayerManager;
 import me.elliottolson.bowspleef.util.MessageManager;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -38,6 +36,8 @@ public class Game {
     private Location lobby;
     private Location spawn;
     private Location spectatorSpawn;
+    private Location pos1;
+    private Location pos2;
 
     public Game(String name) {
         this.name = name;
@@ -224,7 +224,14 @@ public class Game {
     }
 
     public void start(){
+        state = GameState.STARTING;
 
+        GameCountdownEvent event = new GameCountdownEvent(this);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        new GameCountdown(this).runTaskTimer(BowSpleef.getInstance(), 0L, 20L);
+
+        msgAll(MessageManager.MessageType.INFO, "This game will begin soon...");
     }
 
     public void end(){
@@ -232,15 +239,49 @@ public class Game {
     }
 
     public void reset(){
+        int minx = Math.min(pos1.getBlockX(), pos2.getBlockX());
+        int miny = Math.min(pos1.getBlockY(), pos2.getBlockY());
+        int minz = Math.min(pos1.getBlockZ(), pos2.getBlockZ());
+        int maxx = Math.max(pos1.getBlockX(), pos2.getBlockX());
+        int maxy = Math.max(pos1.getBlockY(), pos2.getBlockY());
+        int maxz = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
 
+        for (int x = minx; x < maxx; x++){
+            for (int y = miny; y < maxy; y++){
+                for (int z = minz; minz < maxz; z++){
+                    Block block = pos1.getWorld().getBlockAt(x, y, z);
+
+                    if (block.getType() == Material.AIR){
+                        block.setType(Material.TNT);
+                    }
+                }
+            }
+        }
     }
 
     public void enable(){
+        if (pos1 == null)
+            return;
 
+        if (pos2 == null)
+            return;
+
+        if (spawn == null)
+            return;
+
+        if (lobby == null)
+            return;
+
+        setState(GameState.LOBBY);
+        reset();
+
+        //TODO: Update Signs
     }
 
     public void disable(){
+        setState(GameState.DISABLED);
 
+        //TODO: Update Signs
     }
 
     public void setup() {
@@ -318,5 +359,73 @@ public class Game {
 
     public List<Player> getVoters() {
         return voters;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    public void setSpectators(List<Player> spectators) {
+        this.spectators = spectators;
+    }
+
+    public void setVoters(List<Player> voters) {
+        this.voters = voters;
+    }
+
+    public int getMaximumPlayers() {
+        return maximumPlayers;
+    }
+
+    public void setMaximumPlayers(int maximumPlayers) {
+        this.maximumPlayers = maximumPlayers;
+    }
+
+    public int getMinimumPlayers() {
+        return minimumPlayers;
+    }
+
+    public void setMinimumPlayers(int minimumPlayers) {
+        this.minimumPlayers = minimumPlayers;
+    }
+
+    public Location getLobby() {
+        return lobby;
+    }
+
+    public void setLobby(Location lobby) {
+        this.lobby = lobby;
+    }
+
+    public Location getSpawn() {
+        return spawn;
+    }
+
+    public void setSpawn(Location spawn) {
+        this.spawn = spawn;
+    }
+
+    public Location getSpectatorSpawn() {
+        return spectatorSpawn;
+    }
+
+    public void setSpectatorSpawn(Location spectatorSpawn) {
+        this.spectatorSpawn = spectatorSpawn;
+    }
+
+    public Location getPos1() {
+        return pos1;
+    }
+
+    public void setPos1(Location pos1) {
+        this.pos1 = pos1;
+    }
+
+    public Location getPos2() {
+        return pos2;
+    }
+
+    public void setPos2(Location pos2) {
+        this.pos2 = pos2;
     }
 }

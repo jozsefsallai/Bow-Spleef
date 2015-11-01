@@ -251,7 +251,7 @@ public class Game {
 
         for (int x = minx; x < maxx; x++){
             for (int y = miny; y < maxy; y++){
-                for (int z = minz; minz < maxz; z++){
+                for (int z = minz; z < maxz; z++){
                     Block block = pos1.getWorld().getBlockAt(x, y, z);
 
                     if (block.getType() == Material.AIR){
@@ -320,7 +320,12 @@ public class Game {
         //Load all arena values
         FileConfiguration arenaConfig = ConfigurationManager.getArenaConfig();
 
-        setState(GameState.valueOf(arenaConfig.getString("arenas." + name + ".game-state")));
+        for (GameState state : GameState.values()){
+            if (state.equals(arenaConfig.getString("arenas." + name + ".game-state"))){
+                setState(state);
+            }
+        }
+
         setMinimumPlayers(arenaConfig.getInt("arenas." + name + ".minimum-players"));
         setMaximumPlayers(arenaConfig.getInt("arenas." + name + ".maximum-players"));
 
@@ -337,44 +342,56 @@ public class Game {
         }
 
         {
-            int x = arenaConfig.getInt("arenas." + name + ".lobby.x");
-            int y = arenaConfig.getInt("arenas." + name + ".lobby.y");
-            int z = arenaConfig.getInt("arenas." + name + ".lobby.z");
-            String world = arenaConfig.getString("arenas." + name + ".lobby.world");
-            setLobby(new Location(Bukkit.getWorld(world), x, y, z));
+            if (arenaConfig.contains("arenas." + name + ".lobby.x")){
+                int x = arenaConfig.getInt("arenas." + name + ".lobby.x");
+                int y = arenaConfig.getInt("arenas." + name + ".lobby.y");
+                int z = arenaConfig.getInt("arenas." + name + ".lobby.z");
+                String world = arenaConfig.getString("arenas." + name + ".lobby.world");
+                setLobby(new Location(Bukkit.getWorld(world), x, y, z));
+            }
         }
 
         {
-            int x = arenaConfig.getInt("arenas." + name + ".corner.1.x");
-            int y = arenaConfig.getInt("arenas." + name + ".corner.1.y");
-            int z = arenaConfig.getInt("arenas." + name + ".corner.1.z");
-            String world = arenaConfig.getString("arenas." + name + ".corner.1.world");
-            setPos1(new Location(Bukkit.getWorld(world), x, y, z));
+            if (arenaConfig.contains("arenas." + name + ".corner.1.x")) {
+                int x = arenaConfig.getInt("arenas." + name + ".corner.1.x");
+                int y = arenaConfig.getInt("arenas." + name + ".corner.1.y");
+                int z = arenaConfig.getInt("arenas." + name + ".corner.1.z");
+                String world = arenaConfig.getString("arenas." + name + ".corner.1.world");
+                setPos1(new Location(Bukkit.getWorld(world), x, y, z));
+            }
         }
 
         {
-            int x = arenaConfig.getInt("arenas." + name + ".corner.2.x");
-            int y = arenaConfig.getInt("arenas." + name + ".corner.2.y");
-            int z = arenaConfig.getInt("arenas." + name + ".corner.2.z");
-            String world = arenaConfig.getString("arenas." + name + ".corner.2.world");
-            setPos2(new Location(Bukkit.getWorld(world), x, y, z));
+            if (arenaConfig.contains("arenas." + name + ".corner.2.x")) {
+                int x = arenaConfig.getInt("arenas." + name + ".corner.2.x");
+                int y = arenaConfig.getInt("arenas." + name + ".corner.2.y");
+                int z = arenaConfig.getInt("arenas." + name + ".corner.2.z");
+                String world = arenaConfig.getString("arenas." + name + ".corner.2.world");
+                setPos2(new Location(Bukkit.getWorld(world), x, y, z));
+            }
         }
 
         {
-            int x = arenaConfig.getInt("arenas." + name + ".spawn.x");
-            int y = arenaConfig.getInt("arenas." + name + ".spawn.y");
-            int z = arenaConfig.getInt("arenas." + name + ".spawn.z");
-            String world = arenaConfig.getString("arenas." + name + ".spawn.world");
-            setSpawn(new Location(Bukkit.getWorld(world), x, y, z));
+            if (arenaConfig.contains("arenas." + name + ".spawn.x")) {
+                int x = arenaConfig.getInt("arenas." + name + ".spawn.x");
+                int y = arenaConfig.getInt("arenas." + name + ".spawn.y");
+                int z = arenaConfig.getInt("arenas." + name + ".spawn.z");
+                String world = arenaConfig.getString("arenas." + name + ".spawn.world");
+                setSpawn(new Location(Bukkit.getWorld(world), x, y, z));
+            }
         }
 
         {
-            int x = arenaConfig.getInt("arenas." + name + ".spectator-spawn.x");
-            int y = arenaConfig.getInt("arenas." + name + ".spectator-spawn.y");
-            int z = arenaConfig.getInt("arenas." + name + ".spectator-spawn.z");
-            String world = arenaConfig.getString("arenas." + name + ".spectator-spawn.world");
-            setSpectatorSpawn(new Location(Bukkit.getWorld(world), x, y, z));
+            if (arenaConfig.contains("arenas." + name + ".spectator-spawn.x")) {
+                int x = arenaConfig.getInt("arenas." + name + ".spectator-spawn.x");
+                int y = arenaConfig.getInt("arenas." + name + ".spectator-spawn.y");
+                int z = arenaConfig.getInt("arenas." + name + ".spectator-spawn.z");
+                String world = arenaConfig.getString("arenas." + name + ".spectator-spawn.world");
+                setSpectatorSpawn(new Location(Bukkit.getWorld(world), x, y, z));
+            }
         }
+
+        GameManager.getInstance().getGames().add(this);
 
         enable();
     }
@@ -409,34 +426,44 @@ public class Game {
         arenaConfig.set("arenas." + name + ".voters", configVoters);
 
         //Lobby
-        arenaConfig.set("arenas." + name + ".lobby.x", getLobby().getBlockX());
-        arenaConfig.set("arenas." + name + ".lobby.y", getLobby().getBlockY());
-        arenaConfig.set("arenas." + name + ".lobby.z", getLobby().getBlockZ());
-        arenaConfig.set("arenas." + name + ".lobby.world", getLobby().getWorld().getName());
+        if (getLobby() != null){
+            arenaConfig.set("arenas." + name + ".lobby.x", getLobby().getBlockX());
+            arenaConfig.set("arenas." + name + ".lobby.y", getLobby().getBlockY());
+            arenaConfig.set("arenas." + name + ".lobby.z", getLobby().getBlockZ());
+            arenaConfig.set("arenas." + name + ".lobby.world", getLobby().getWorld().getName());
+        }
 
         //Corner 1
-        arenaConfig.set("arenas." + name + ".corner.1.x", getPos1().getBlockX());
-        arenaConfig.set("arenas." + name + ".corner.1.y", getPos1().getBlockY());
-        arenaConfig.set("arenas." + name + ".corner.1.z", getPos1().getBlockZ());
-        arenaConfig.set("arenas." + name + ".corner.1.world", getPos1().getWorld().getName());
+        if (getPos1() != null){
+            arenaConfig.set("arenas." + name + ".corner.1.x", getPos1().getBlockX());
+            arenaConfig.set("arenas." + name + ".corner.1.y", getPos1().getBlockY());
+            arenaConfig.set("arenas." + name + ".corner.1.z", getPos1().getBlockZ());
+            arenaConfig.set("arenas." + name + ".corner.1.world", getPos1().getWorld().getName());
+        }
 
         //Corner 2
-        arenaConfig.set("arenas." + name + ".corner.2.x", getPos2().getBlockX());
-        arenaConfig.set("arenas." + name + ".corner.2.y", getPos2().getBlockY());
-        arenaConfig.set("arenas." + name + ".corner.2.z", getPos2().getBlockZ());
-        arenaConfig.set("arenas." + name + ".corner.2.world", getPos2().getWorld().getName());
+        if (getPos2() != null){
+            arenaConfig.set("arenas." + name + ".corner.2.x", getPos2().getBlockX());
+            arenaConfig.set("arenas." + name + ".corner.2.y", getPos2().getBlockY());
+            arenaConfig.set("arenas." + name + ".corner.2.z", getPos2().getBlockZ());
+            arenaConfig.set("arenas." + name + ".corner.2.world", getPos2().getWorld().getName());
+        }
 
         //Game Spawn
-        arenaConfig.set("arenas." + name + ".spawn.x", getSpawn().getBlockX());
-        arenaConfig.set("arenas." + name + ".spawn.y", getSpawn().getBlockY());
-        arenaConfig.set("arenas." + name + ".spawn.z", getSpawn().getBlockZ());
-        arenaConfig.set("arenas." + name + ".spawn.world", getSpawn().getWorld().getName());
+        if (getSpawn() != null){
+            arenaConfig.set("arenas." + name + ".spawn.x", getSpawn().getBlockX());
+            arenaConfig.set("arenas." + name + ".spawn.y", getSpawn().getBlockY());
+            arenaConfig.set("arenas." + name + ".spawn.z", getSpawn().getBlockZ());
+            arenaConfig.set("arenas." + name + ".spawn.world", getSpawn().getWorld().getName());
+        }
 
         //Spectator Spawn
-        arenaConfig.set("arenas." + name + ".spectator-spawn.x", getSpectatorSpawn().getBlockX());
-        arenaConfig.set("arenas." + name + ".spectator-spawn.y", getSpectatorSpawn().getBlockY());
-        arenaConfig.set("arenas." + name + ".spectator-spawn.z", getSpectatorSpawn().getBlockZ());
-        arenaConfig.set("arenas." + name + ".spectator-spawn.world", getSpectatorSpawn().getWorld().getName());
+        if (getSpectatorSpawn() != null){
+            arenaConfig.set("arenas." + name + ".spectator-spawn.x", getSpectatorSpawn().getBlockX());
+            arenaConfig.set("arenas." + name + ".spectator-spawn.y", getSpectatorSpawn().getBlockY());
+            arenaConfig.set("arenas." + name + ".spectator-spawn.z", getSpectatorSpawn().getBlockZ());
+            arenaConfig.set("arenas." + name + ".spectator-spawn.world", getSpectatorSpawn().getWorld().getName());
+        }
     }
 
     public void setPos1(Player player){

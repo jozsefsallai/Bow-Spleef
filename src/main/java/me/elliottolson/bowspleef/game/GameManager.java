@@ -28,9 +28,18 @@ public class GameManager {
     public void loadGames(){
         games.clear();
 
-        for (String name : ConfigurationManager.getArenaConfig().getStringList("list.arenas")){
-            games.add(new Game(name));
+        for (String name : ConfigurationManager.getArenaConfig().getStringList("list.games")){
+            Game game = new Game(name);
+            game.setup();
         }
+    }
+
+    public void saveGames(){
+        List<String> gameNames = new ArrayList<String>();
+        for (Game game : games){
+            gameNames.add(game.getName());
+        }
+        ConfigurationManager.getArenaConfig().set("list.games", gameNames);
     }
 
     public void createGame(String name, Player player){
@@ -91,6 +100,9 @@ public class GameManager {
         return null;
     }
 
+    public List<Game> getGames() {
+        return games;
+    }
 
     /**
      * Returns a new instance of {@link GameManager}, creating one if null.

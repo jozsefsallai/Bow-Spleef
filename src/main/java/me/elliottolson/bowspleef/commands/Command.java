@@ -18,6 +18,7 @@ public abstract class Command {
 
     protected String name;
     protected String usage;
+    protected String description;
     protected List<String> args = new ArrayList();
     protected String alias;
     protected CommandSender sender;
@@ -28,6 +29,7 @@ public abstract class Command {
     public CommandResult run(CommandSender sender, String command, String[] preArgs) {
         setSender(sender);
         setName(command);
+        setDescription(description);
 
         getArgs().clear();
         for (String string : preArgs) {
@@ -56,8 +58,9 @@ public abstract class Command {
     }
 
     public String getDisplayUsage() {
-        return new StringBuilder().append(ChatColor.DARK_AQUA + "/bs " + ChatColor.GREEN + getName()).append(hasAlias() ?                new StringBuilder().append(ChatColor.GRAY).append("/").append(ChatColor.GREEN).append(getAlias()).toString() : "")
-                .append(" ").append(ChatColor.RED).append(getUsage()).toString();
+        String usage = ChatColor.DARK_AQUA + "/bs " + ChatColor.GREEN + getName() + (hasAlias() ? ChatColor.GRAY + "/" +
+                ChatColor.GREEN + getAlias() : "") + " " + ChatColor.RED + getUsage() + ChatColor.DARK_GRAY + " - " + ChatColor.GRAY + getDescription();
+        return usage;
     }
 
     public String getName() {
@@ -66,6 +69,14 @@ public abstract class Command {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getUsage() {

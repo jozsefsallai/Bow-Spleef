@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
  */
 public class CommandProcessor implements CommandExecutor {
 
-    @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String s, String[] args)
     {
         String cmd = "help";

@@ -1,7 +1,7 @@
 package me.elliottolson.bowspleef.manager;
 
 import me.elliottolson.bowspleef.BowSpleef;
-import org.mcstats.Metrics;
+import me.elliottolson.bowspleef.util.Metrics;
 
 /**
  * Copyright Elliott Olson (c) 2015. All Rights Reserved.

@@ -1,5 +1,8 @@
 package me.elliottolson.bowspleef.commands;
 
+import me.elliottolson.bowspleef.util.MessageManager;
+import org.bukkit.entity.Player;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,12 @@ public class Commands {
 
     public static void setCommandList(List<Command> commandList) {
         commandList = commandList;
+    }
+
+    public static void displayCommands(Player player){
+        for (Command command : commandList){
+            MessageManager.msg(MessageManager.MessageType.SUB_INFO, player, command.getDisplayUsage());
+        }
     }
 
 }

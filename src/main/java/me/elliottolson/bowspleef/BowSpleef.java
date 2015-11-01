@@ -1,12 +1,13 @@
 package me.elliottolson.bowspleef;
 
-import me.elliottolson.bowspleef.commands.CommandProcessor;
+import me.elliottolson.bowspleef.commands.*;
+import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
 import me.elliottolson.bowspleef.listeners.GameListener;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.manager.StatisticCollection;
+import me.elliottolson.bowspleef.util.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.Metrics;
 
 /**
  * Copyright Elliott Olson (c) 2015. All Rights Reserved.
@@ -34,12 +35,22 @@ public class BowSpleef extends JavaPlugin {
         //               Commands              //
         /////////////////////////////////////////
         getCommand("bs").setExecutor(new CommandProcessor());
+        Commands.getCommandList().add(new HelpCommand());
+        Commands.getCommandList().add(new CreateCommand());
+        Commands.getCommandList().add(new JoinCommand());
+        Commands.getCommandList().add(new CheckStateCommand());
+        Commands.getCommandList().add(new SetCommand());
 
 
         /////////////////////////////////////////
         //              Listeners              //
         /////////////////////////////////////////
         getServer().getPluginManager().registerEvents(new GameListener(), this);
+
+        /////////////////////////////////////////
+        //               Games                 //
+        /////////////////////////////////////////
+        GameManager.getInstance().loadGames();
 
         try {
             metrics = new Metrics(this);
@@ -49,12 +60,22 @@ public class BowSpleef extends JavaPlugin {
             e.printStackTrace();
         }
 
-        getLogger().info("BowSpleef Version: 1.3.0 is enabled!'");
+        getLogger().info("BowSpleef Version: 1.3.0 is enabled!");
     }
 
     @Override
     public void onDisable() {
+        getLogger().info("BowSpleef Version: 1.3.0 is disabling...");
 
+        for (Game game : GameManager.getInstance().getGames()){
+            game.save();
+        }
+
+        GameManager.getInstance().saveGames();
+
+        ConfigurationManager.saveConfig();
+
+        getLogger().info("BowSpleef Version: 1.3.0 is disabled!");
     }
 
     public static BowSpleef getInstance() {

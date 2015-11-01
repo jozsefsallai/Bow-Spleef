@@ -10,6 +10,7 @@ import me.elliottolson.bowspleef.manager.PlayerManager;
 import me.elliottolson.bowspleef.util.MessageManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -113,7 +114,7 @@ public class Game {
                 //TODO: Update scoreboards
             }
 
-            //TODO: Update signs
+            updateSign();
 
         } else if (getState() == GameState.INGAME){
 
@@ -161,7 +162,7 @@ public class Game {
                 //TODO: Update scoreboards
             }
 
-            //TODO: Update signs
+            updateSign();
 
         } else {
             MessageManager.msg(MessageManager.MessageType.ERROR, player, "You cannot join the game at this time.");
@@ -209,6 +210,7 @@ public class Game {
             if (remaining == 0){
 
                 state = GameState.STARTING;
+                updateSign();
 
                 {
                     GameCountdownEvent event = new GameCountdownEvent(this);
@@ -260,6 +262,35 @@ public class Game {
         }
     }
 
+    public void updateSign(){
+        if (!ConfigurationManager.getArenaConfig().contains("arenas." + name + ".sign.x")){
+            return;
+        }
+
+        int x = ConfigurationManager.getArenaConfig().getInt("arenas." + name + ".sign.x");
+        int y = ConfigurationManager.getArenaConfig().getInt("arenas." + name + ".sign.y");
+        int z = ConfigurationManager.getArenaConfig().getInt("arenas." + name + ".sign.z");
+        String world = ConfigurationManager.getArenaConfig().getString("arenas." + name + ".sign.world");
+
+        Location bl = new Location(Bukkit.getWorld(world), x, y, z);
+
+        if (bl == null || bl.getBlock() == null){
+            Block block = bl.getBlock();
+
+            if (block.getState() instanceof Sign){
+                Sign sign = (Sign) block.getState();
+
+                sign.setLine(0, ChatColor.AQUA + "[BowSpleef]");
+                sign.setLine(1, name);
+                sign.setLine(2, state.getColor() + state.getName());
+                sign.setLine(3, ChatColor.DARK_GREEN.toString() + players.size() + ChatColor.DARK_GRAY + "/" +
+                        ChatColor.DARK_GREEN.toString() + maximumPlayers);
+
+            }
+        }
+
+    }
+
     public void enable(){
         if (pos1 == null)
             return;
@@ -276,13 +307,13 @@ public class Game {
         setState(GameState.LOBBY);
         reset();
 
-        //TODO: Update Signs
+        updateSign();
     }
 
     public void disable(){
         setState(GameState.DISABLED);
 
-        //TODO: Update Signs
+        updateSign();
     }
 
     public void setup() {
@@ -517,6 +548,7 @@ public class Game {
 
     public void setState(GameState state) {
         this.state = state;
+        updateSign();
     }
 
     public List<Player> getPlayers() {

@@ -38,8 +38,8 @@ public class BowSpleef extends JavaPlugin {
         Commands.getCommandList().add(new HelpCommand());
         Commands.getCommandList().add(new CreateCommand());
         Commands.getCommandList().add(new JoinCommand());
-        Commands.getCommandList().add(new CheckStateCommand());
         Commands.getCommandList().add(new SetCommand());
+        Commands.getCommandList().add(new LeaveCommand());
 
 
         /////////////////////////////////////////

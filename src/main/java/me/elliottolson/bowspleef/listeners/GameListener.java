@@ -1,7 +1,7 @@
 package me.elliottolson.bowspleef.listeners;
 
+import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
-import me.elliottolson.bowspleef.manager.PlayerManager;
 import me.elliottolson.bowspleef.util.MessageManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * Copyright Elliott Olson (c) 2015. All Rights Reserved.
@@ -21,6 +22,16 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
  * agreements with you, the third party.
  */
 public class GameListener implements Listener {
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e){
+        Player player = e.getPlayer();
+
+        if (GameManager.getInstance().getPlayerGame(player) != null){
+            Game game = GameManager.getInstance().getPlayerGame(player);
+            game.removePlayer(player);
+        }
+    }
 
     @EventHandler
     public void onDamage(EntityDamageEvent e){

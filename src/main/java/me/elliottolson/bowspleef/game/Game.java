@@ -1,10 +1,7 @@
 package me.elliottolson.bowspleef.game;
 
 import me.elliottolson.bowspleef.BowSpleef;
-import me.elliottolson.bowspleef.api.GameCountdownEvent;
-import me.elliottolson.bowspleef.api.GameJoinEvent;
-import me.elliottolson.bowspleef.api.GameSpectateEvent;
-import me.elliottolson.bowspleef.api.GameVoteEvent;
+import me.elliottolson.bowspleef.api.*;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.manager.PlayerManager;
 import me.elliottolson.bowspleef.util.MessageManager;
@@ -170,7 +167,57 @@ public class Game {
     }
 
     public void removePlayer(Player player){
+        FileConfiguration playerConfig = ConfigurationManager.getPlayerConfig();
 
+        int gamemode = playerConfig.getInt(player.getName() + ".return.gamemode");
+        double health = playerConfig.getDouble(player.getName() + ".return.health");
+        int foodLevel = playerConfig.getInt(player.getName() + ".return.food");
+
+        player.setGameMode(GameMode.getByValue(gamemode));
+        player.setFoodLevel(foodLevel);
+        player.setHealth(health);
+
+        player.getActivePotionEffects().clear();
+        player.getInventory().clear();
+
+        int x = playerConfig.getInt(player.getName() + ".return.x");
+        int y = playerConfig.getInt(player.getName() + ".return.y");
+        int z = playerConfig.getInt(player.getName() + ".return.z");
+        String world = playerConfig.getString(player.getName() + ".return.world");
+
+        player.teleport(new Location(Bukkit.getWorld(world), x, y, z));
+
+        PlayerManager.retrieveInventory(player);
+
+        if (this.voters.contains(player)) {
+            this.voters.remove(player);
+        }
+
+        if (this.players.contains(player))
+            this.players.remove(player);
+        else {
+            this.spectators.remove(player);
+        }
+
+        msgAll(MessageManager.MessageType.ERROR, player.getName() + ChatColor.AQUA + " has left the arena!");
+
+        player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+
+        playerConfig.set(player.getName(), null);
+
+        GameLeaveEvent event = new GameLeaveEvent(player, this);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        if ((this.players.size() == 1) && (getState() == GameState.INGAME)) {
+            Player winner = players.get(0);
+            MessageManager.msg(MessageManager.MessageType.SUCCESS, winner, "You won this round of BowSpleef!");
+
+            removePlayer(winner);
+
+            setState(GameState.RESETTING);
+            reset();
+            setState(GameState.LOBBY);
+        }
     }
 
     public void vote(Player player){
@@ -341,54 +388,46 @@ public class Game {
             voters.add(Bukkit.getPlayer(name));
         }
 
-        {
-            if (arenaConfig.contains("arenas." + name + ".lobby.x")){
-                int x = arenaConfig.getInt("arenas." + name + ".lobby.x");
-                int y = arenaConfig.getInt("arenas." + name + ".lobby.y");
-                int z = arenaConfig.getInt("arenas." + name + ".lobby.z");
-                String world = arenaConfig.getString("arenas." + name + ".lobby.world");
-                setLobby(new Location(Bukkit.getWorld(world), x, y, z));
-            }
+        if (arenaConfig.contains("arenas." + name + ".lobby.x")){
+            int x = arenaConfig.getInt("arenas." + name + ".lobby.x");
+            int y = arenaConfig.getInt("arenas." + name + ".lobby.y");
+            int z = arenaConfig.getInt("arenas." + name + ".lobby.z");
+            String world = arenaConfig.getString("arenas." + name + ".lobby.world");
+            setLobby(new Location(Bukkit.getWorld(world), x, y, z));
         }
 
-        {
-            if (arenaConfig.contains("arenas." + name + ".corner.1.x")) {
-                int x = arenaConfig.getInt("arenas." + name + ".corner.1.x");
-                int y = arenaConfig.getInt("arenas." + name + ".corner.1.y");
-                int z = arenaConfig.getInt("arenas." + name + ".corner.1.z");
-                String world = arenaConfig.getString("arenas." + name + ".corner.1.world");
-                setPos1(new Location(Bukkit.getWorld(world), x, y, z));
-            }
+
+        if (arenaConfig.contains("arenas." + name + ".corner.1.x")) {
+            int x = arenaConfig.getInt("arenas." + name + ".corner.1.x");
+            int y = arenaConfig.getInt("arenas." + name + ".corner.1.y");
+            int z = arenaConfig.getInt("arenas." + name + ".corner.1.z");
+            String world = arenaConfig.getString("arenas." + name + ".corner.1.world");
+            setPos1(new Location(Bukkit.getWorld(world), x, y, z));
         }
 
-        {
-            if (arenaConfig.contains("arenas." + name + ".corner.2.x")) {
-                int x = arenaConfig.getInt("arenas." + name + ".corner.2.x");
-                int y = arenaConfig.getInt("arenas." + name + ".corner.2.y");
-                int z = arenaConfig.getInt("arenas." + name + ".corner.2.z");
-                String world = arenaConfig.getString("arenas." + name + ".corner.2.world");
-                setPos2(new Location(Bukkit.getWorld(world), x, y, z));
-            }
+
+        if (arenaConfig.contains("arenas." + name + ".corner.2.x")) {
+            int x = arenaConfig.getInt("arenas." + name + ".corner.2.x");
+            int y = arenaConfig.getInt("arenas." + name + ".corner.2.y");
+            int z = arenaConfig.getInt("arenas." + name + ".corner.2.z");
+            String world = arenaConfig.getString("arenas." + name + ".corner.2.world");
+            setPos2(new Location(Bukkit.getWorld(world), x, y, z));
         }
 
-        {
-            if (arenaConfig.contains("arenas." + name + ".spawn.x")) {
-                int x = arenaConfig.getInt("arenas." + name + ".spawn.x");
-                int y = arenaConfig.getInt("arenas." + name + ".spawn.y");
-                int z = arenaConfig.getInt("arenas." + name + ".spawn.z");
-                String world = arenaConfig.getString("arenas." + name + ".spawn.world");
-                setSpawn(new Location(Bukkit.getWorld(world), x, y, z));
-            }
+        if (arenaConfig.contains("arenas." + name + ".spawn.x")) {
+            int x = arenaConfig.getInt("arenas." + name + ".spawn.x");
+            int y = arenaConfig.getInt("arenas." + name + ".spawn.y");
+            int z = arenaConfig.getInt("arenas." + name + ".spawn.z");
+            String world = arenaConfig.getString("arenas." + name + ".spawn.world");
+            setSpawn(new Location(Bukkit.getWorld(world), x, y, z));
         }
 
-        {
-            if (arenaConfig.contains("arenas." + name + ".spectator-spawn.x")) {
-                int x = arenaConfig.getInt("arenas." + name + ".spectator-spawn.x");
-                int y = arenaConfig.getInt("arenas." + name + ".spectator-spawn.y");
-                int z = arenaConfig.getInt("arenas." + name + ".spectator-spawn.z");
-                String world = arenaConfig.getString("arenas." + name + ".spectator-spawn.world");
-                setSpectatorSpawn(new Location(Bukkit.getWorld(world), x, y, z));
-            }
+        if (arenaConfig.contains("arenas." + name + ".spectator-spawn.x")) {
+            int x = arenaConfig.getInt("arenas." + name + ".spectator-spawn.x");
+            int y = arenaConfig.getInt("arenas." + name + ".spectator-spawn.y");
+            int z = arenaConfig.getInt("arenas." + name + ".spectator-spawn.z");
+            String world = arenaConfig.getString("arenas." + name + ".spectator-spawn.world");
+            setSpectatorSpawn(new Location(Bukkit.getWorld(world), x, y, z));
         }
 
         GameManager.getInstance().getGames().add(this);

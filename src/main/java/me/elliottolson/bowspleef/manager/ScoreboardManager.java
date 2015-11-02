@@ -39,13 +39,14 @@ public class ScoreboardManager {
             addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "GAME:", 16);
             addLine(ChatColor.WHITE + "Waiting: " + ChatColor.GREEN + game.getPlayers().size(), 15);
             addLine(ChatColor.WHITE + "Needed: " + ChatColor.RED + game.getMinimumPlayers(), 14);
+            addLine(ChatColor.WHITE + "Votes: " + ChatColor.YELLOW + game.getVoters().size(), 13);
 
-            addLine("", 13);
+            addLine("", 12);
 
-//            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
-//            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 15);
-//            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 14);
-//            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 15);
+            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 11);
+            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 10);
+            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 9);
+            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 8);
 
         } else if (game.getState() == game.getState().STARTING){
 
@@ -55,10 +56,10 @@ public class ScoreboardManager {
 
             addLine("", 13);
 
-//            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
-//            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 15);
-//            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 14);
-//            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 15);
+            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
+            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 15);
+            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 14);
+            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 15);
 
         } else if (game.getState() == game.getState().SPREAD){
 
@@ -68,10 +69,10 @@ public class ScoreboardManager {
 
             addLine("", 13);
 
-//            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
-//            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 15);
-//            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 14);
-//            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 15);
+            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
+            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 15);
+            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 14);
+            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 15);
 
         } else if (game.getState() == game.getState().INGAME){
 
@@ -81,10 +82,10 @@ public class ScoreboardManager {
 
             addLine("", 13);
 
-//            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
-//            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 15);
-//            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 14);
-//            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 15);
+            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
+            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 15);
+            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 14);
+            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 15);
 
         } else {
             addLine(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "ERROR", 16);

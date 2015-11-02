@@ -4,6 +4,7 @@ import me.elliottolson.bowspleef.BowSpleef;
 import me.elliottolson.bowspleef.api.*;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.manager.PlayerManager;
+import me.elliottolson.bowspleef.manager.ScoreboardManager;
 import me.elliottolson.bowspleef.util.MessageManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -23,6 +24,8 @@ import java.util.List;
  */
 public class Game {
 
+    private ScoreboardManager scoreboardManager;
+
     private String name;
     private GameState state = GameState.NOTSETUP;
     private List<Player> players = new ArrayList<Player>();
@@ -40,6 +43,7 @@ public class Game {
 
     public Game(String name) {
         this.name = name;
+        scoreboardManager = new ScoreboardManager(this);
     }
 
     public void addPlayer(Player player){
@@ -101,7 +105,6 @@ public class Game {
                 MessageManager.msg(MessageManager.MessageType.SUCCESS, p, player.getName() + ChatColor.AQUA +
                         " has joined the game! " + ChatColor.GRAY + "(" + ChatColor.YELLOW + players.size() +
                         ChatColor.GRAY + "/" + ChatColor.YELLOW + maximumPlayers + ChatColor.GRAY + ")");
-                //TODO: Update scoreboards
             }
 
             for (Player p : spectators){
@@ -112,6 +115,7 @@ public class Game {
             }
 
             updateSign();
+            updateScoreboard();
 
         } else if (getState() == GameState.INGAME){
 
@@ -150,16 +154,15 @@ public class Game {
             for (Player p : players){
                 MessageManager.msg(MessageManager.MessageType.SUCCESS, p, player.getName() + ChatColor.AQUA +
                         " is spectating this game!");
-                //TODO: Update scoreboards
             }
 
             for (Player p : spectators){
                 MessageManager.msg(MessageManager.MessageType.SUCCESS, p, player.getName() + ChatColor.AQUA +
                         " is spectating this game!");
-                //TODO: Update scoreboards
             }
 
             updateSign();
+            updateScoreboard();
 
         } else {
             MessageManager.msg(MessageManager.MessageType.ERROR, player, "You cannot join the game at this time.");
@@ -202,6 +205,9 @@ public class Game {
         msgAll(MessageManager.MessageType.ERROR, player.getName() + ChatColor.AQUA + " has left the arena!");
 
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+
+        updateScoreboard();
+        updateSign();
 
         playerConfig.set(player.getName(), null);
 
@@ -249,6 +255,8 @@ public class Game {
             Bukkit.getServer().getPluginManager().callEvent(event);
         }
 
+        updateScoreboard();
+
         if (players.size() >= 2){
 
             int votesNeeded = Math.round(players.size() * (2/3));
@@ -256,17 +264,10 @@ public class Game {
 
             if (remaining == 0){
 
-                state = GameState.STARTING;
-                updateSign();
+                start();
 
-                {
-                    GameCountdownEvent event = new GameCountdownEvent(this);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
-                }
+                updateScoreboard();
 
-                new GameCountdown(this).runTaskTimer(BowSpleef.getInstance(), 0L, 20L);
-
-                msgAll(MessageManager.MessageType.INFO, "This game will begin soon...");
             }
 
         }
@@ -336,6 +337,16 @@ public class Game {
             }
         }
 
+    }
+
+    public void updateScoreboard(){
+        for (Player player : players){
+            scoreboardManager.applyScoreboard(player);
+        }
+
+        for (Player player : spectators){
+            scoreboardManager.applyScoreboard(player);
+        }
     }
 
     public void enable(){

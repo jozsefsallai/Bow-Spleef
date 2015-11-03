@@ -2,7 +2,6 @@ package me.elliottolson.bowspleef.commands;
 
 import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
-import me.elliottolson.bowspleef.util.MessageManager;
 
 /**
  * Copyright Elliott Olson (c) 2015. All Rights Reserved.
@@ -11,32 +10,26 @@ import me.elliottolson.bowspleef.util.MessageManager;
  * claiming any contents as your own will break the terms of the license, and void any
  * agreements with you, the third party.
  */
-public class LeaveCommand extends Command {
+public class DeleteCommand extends Command {
 
-    public LeaveCommand(){
-        setName("leave");
-        setAlias("l");
-        setUsage("");
+    public DeleteCommand(){
+        setName("delete");
+        setAlias("d");
+        setUsage("<Game>");
         setBePlayer(true);
-        setPermission("bowspleef.player.game.leave");
-        setDescription("Leave a game.");
+        setDescription("Delete a game.");
+        setPermission("bowspleef.admin.game.delete");
     }
 
     @Override
     public CommandResult execute() {
 
-        if (getArgs().size() == 1){
+        if (getArgs().size() == 2){
 
-            Game game = GameManager.getInstance().getPlayerGame(player);
+            String name = getArgs().get(1);
+            GameManager.getInstance().deleteGame(name, player);
 
-            if (game != null){
-
-                game.removePlayer(player);
-
-            } else {
-                MessageManager.msg(MessageManager.MessageType.ERROR, player, "You are currently not in a game.");
-            }
-
+            return CommandResult.SUCCESS;
         }
 
         return CommandResult.INVALID_USAGE;

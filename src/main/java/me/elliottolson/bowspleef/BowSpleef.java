@@ -3,6 +3,7 @@ package me.elliottolson.bowspleef;
 import me.elliottolson.bowspleef.commands.*;
 import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
+import me.elliottolson.bowspleef.kit.common.KitListener;
 import me.elliottolson.bowspleef.listeners.GameListener;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.manager.StatisticCollection;
@@ -37,15 +38,16 @@ public class BowSpleef extends JavaPlugin {
         getCommand("bs").setExecutor(new CommandProcessor());
         Commands.getCommandList().add(new HelpCommand());
         Commands.getCommandList().add(new CreateCommand());
+        Commands.getCommandList().add(new DeleteCommand());
         Commands.getCommandList().add(new JoinCommand());
-        Commands.getCommandList().add(new SetCommand());
         Commands.getCommandList().add(new LeaveCommand());
-
+        Commands.getCommandList().add(new SetCommand());
 
         /////////////////////////////////////////
         //              Listeners              //
         /////////////////////////////////////////
         getServer().getPluginManager().registerEvents(new GameListener(), this);
+        getServer().getPluginManager().registerEvents(new KitListener(), this);
 
         /////////////////////////////////////////
         //               Games                 //

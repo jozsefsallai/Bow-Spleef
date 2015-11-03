@@ -1,7 +1,5 @@
 package me.elliottolson.bowspleef.kit.common;
 
-import me.elliottolson.bowspleef.kit.common.Kit;
-
 import java.util.ArrayList;
 import java.util.List;
 

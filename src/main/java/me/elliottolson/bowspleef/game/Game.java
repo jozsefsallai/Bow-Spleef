@@ -2,9 +2,11 @@ package me.elliottolson.bowspleef.game;
 
 import me.elliottolson.bowspleef.BowSpleef;
 import me.elliottolson.bowspleef.api.*;
+import me.elliottolson.bowspleef.kit.common.KitManager;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.manager.PlayerManager;
 import me.elliottolson.bowspleef.manager.ScoreboardManager;
+import me.elliottolson.bowspleef.manager.StatManager;
 import me.elliottolson.bowspleef.util.MessageManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -149,7 +151,18 @@ public class Game {
 
             spectators.add(player);
 
-            //TODO: Stats, Achievements, Kits, Economy
+            //TODO: Achievements
+
+            //Kits
+            KitManager.setKit(player, KitManager.getKit("classic"));
+
+            //Economy and Points
+            if (!ConfigurationManager.getStatisticsConfig().contains(player.getUniqueId().toString())){
+                StatManager.setGames(player.getUniqueId(), 0);
+                StatManager.setLosses(player.getUniqueId(), 0);
+                StatManager.setWins(player.getUniqueId(), 0);
+                StatManager.setPoints(player.getUniqueId(), 100);
+            }
 
             for (Player p : players){
                 MessageManager.msg(MessageManager.MessageType.SUCCESS, p, player.getName() + ChatColor.AQUA +
@@ -202,7 +215,11 @@ public class Game {
             this.spectators.remove(player);
         }
 
-        msgAll(MessageManager.MessageType.ERROR, player.getName() + ChatColor.AQUA + " has left the arena!");
+        if (getState() == GameState.INGAME){
+            msgAll(MessageManager.MessageType.ERROR, player.getName() + ChatColor.AQUA + " has lost!");
+        } else {
+            msgAll(MessageManager.MessageType.ERROR, player.getName() + ChatColor.AQUA + " has left the arena!");
+        }
 
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 
@@ -220,9 +237,7 @@ public class Game {
 
             removePlayer(winner);
 
-            setState(GameState.RESETTING);
-            reset();
-            setState(GameState.LOBBY);
+            end();
         }
     }
 
@@ -286,7 +301,9 @@ public class Game {
     }
 
     public void end(){
-
+        setState(GameState.RESETTING);
+        reset();
+        setState(GameState.LOBBY);
     }
 
     public void reset(){
@@ -300,11 +317,8 @@ public class Game {
         for (int x = minx; x < maxx; x++){
             for (int y = miny; y < maxy; y++){
                 for (int z = minz; z < maxz; z++){
-                    Block block = pos1.getWorld().getBlockAt(x, y, z);
-
-                    if (block.getType() == Material.AIR){
-                        block.setType(Material.TNT);
-                    }
+                    Block block = new Location(pos1.getWorld(), x, y, z).getBlock();
+                    block.setType(Material.TNT);
                 }
             }
         }

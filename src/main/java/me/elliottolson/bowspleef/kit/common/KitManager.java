@@ -1,5 +1,9 @@
 package me.elliottolson.bowspleef.kit.common;
 
+import me.elliottolson.bowspleef.game.GameManager;
+import me.elliottolson.bowspleef.manager.ConfigurationManager;
+import org.bukkit.entity.Player;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +17,25 @@ import java.util.List;
 public class KitManager {
 
     public static List<Kit> getKits = new ArrayList<Kit>();
+
+    public static Kit getKit(Player player){
+        if (GameManager.getInstance().getPlayerGame(player) != null){
+            String kitName = ConfigurationManager.getPlayerConfig().getString(player.getName() + ".kit");
+            return getKit(kitName);
+        }
+
+        return null;
+    }
+
+    public static void setKit(Player player, Kit kit){
+        if (player == null)
+            return;
+
+        if (kit == null)
+            return;
+
+        ConfigurationManager.getPlayerConfig().set(player.getName() + ".kit", kit.getName());
+    }
 
     public static Kit getKit(String name){
         for (Kit kit : getKits){

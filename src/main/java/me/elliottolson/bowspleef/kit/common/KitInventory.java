@@ -1,7 +1,12 @@
 package me.elliottolson.bowspleef.kit.common;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +29,22 @@ public class KitInventory {
 
     //Inventories
     private static Inventory confirmInventory;
+    private static Inventory kitsInventory;
 
     public KitInventory(Player player){
         this.player = player;
+    }
+
+    public void openKits(){
+        kitsInventory = Bukkit.createInventory(player, 54, ChatColor.DARK_AQUA + "[BS] " + ChatColor.BLACK + "Kits");
+        kitsInventory.setMaxStackSize(1);
+
+        ItemStack greyGlass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 15);
+        ItemMeta greyGlassMeta = greyGlass.getItemMeta();
+        greyGlassMeta.setDisplayName(null);
+        greyGlass.setItemMeta(greyGlassMeta);
+
+
     }
 
     //TODO: Confirmation
@@ -128,4 +146,7 @@ public class KitInventory {
         return confirmInventory;
     }
 
+    public static Inventory getKitsInventory() {
+        return kitsInventory;
+    }
 }

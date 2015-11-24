@@ -6,6 +6,7 @@ import me.elliottolson.bowspleef.manager.PlayerManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
@@ -25,9 +26,38 @@ public class KitListener implements Listener {
             Game game = GameManager.getInstance().getPlayerGame(player);
 
             if (game.getState() == Game.GameState.INGAME){
-                if (e.getItem() == PlayerManager.getKit(player).getSpecialItem()){
-                    PlayerManager.getKit(player).execute(player);
+                if (e.getItem() == KitManager.getKit(player).getSpecialItem()){
+                    KitManager.getKit(player).execute(player);
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent e){
+        Player player = (Player) e.getWhoClicked();
+
+        if (GameManager.getInstance().getPlayerGame(player) != null){
+            Game game = GameManager.getInstance().getPlayerGame(player);
+
+            if (game.getState() == Game.GameState.LOBBY || game.getState() == Game.GameState.STARTING){
+
+                if (e.getInventory() == KitInventory.getKitsInventory()){
+
+                    for (Kit kit : KitManager.getKits){
+                        if (e.getCurrentItem() == kit.getIcon()){
+                            KitManager.setKit(player, kit);
+                        }
+                    }
+
+                    e.setCancelled(true);
+
+                } else if (e.getInventory() == KitInventory.getConfirmInventory()){
+
+
+
+                }
+
             }
         }
     }

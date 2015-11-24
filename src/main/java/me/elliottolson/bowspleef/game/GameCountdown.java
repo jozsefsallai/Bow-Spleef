@@ -1,7 +1,9 @@
 package me.elliottolson.bowspleef.game;
 
+import me.elliottolson.bowspleef.kit.common.KitManager;
 import me.elliottolson.bowspleef.util.MessageManager;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -52,7 +54,9 @@ public class GameCountdown extends BukkitRunnable {
             }
 
             if (time == 0){
-                //TODO: Give Kits
+                for (Player player : game.getPlayers()){
+                    KitManager.getKit(player).give(player);
+                }
                 game.setState(Game.GameState.INGAME);
             }
 

@@ -27,7 +27,7 @@ public class KitCooldown extends BukkitRunnable {
         }
 
         if (cooldown == 0){
-            Kit kit = PlayerManager.getKit(player);
+            Kit kit = KitManager.getKit(player);
             MessageManager.msg(MessageManager.MessageType.INFO, player, "You are now able to use: "
                     + kit.getColor() + kit.getName());
             cancel();

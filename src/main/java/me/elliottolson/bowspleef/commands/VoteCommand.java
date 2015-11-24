@@ -29,6 +29,8 @@ public class VoteCommand extends Command {
             Game game = GameManager.getInstance().getPlayerGame(player);
             game.vote(player);
 
+            return CommandResult.SUCCESS;
+
         }
 
         return CommandResult.INVALID_USAGE;

@@ -314,11 +314,15 @@ public class Game {
         int maxy = Math.max(pos1.getBlockY(), pos2.getBlockY());
         int maxz = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
 
-        for (int x = minx; x < maxx; x++){
-            for (int y = miny; y < maxy; y++){
-                for (int z = minz; z < maxz; z++){
-                    Block block = new Location(pos1.getWorld(), x, y, z).getBlock();
-                    block.setType(Material.TNT);
+        for (int x = minx; x <= maxx; x++){
+            for (int y = miny; y <= maxy; y++){
+                for (int z = minz; z <= maxz; z++){
+                    Block block = spawn.getWorld().getBlockAt(x, y, z);
+
+                    if (block.getType().equals(Material.AIR)){
+                        block.setType(Material.TNT);
+                        System.out.println("Updated block: x: " + x + " y: " + y + " z: " + z);
+                    }
                 }
             }
         }

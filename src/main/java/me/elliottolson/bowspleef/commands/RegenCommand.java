@@ -33,6 +33,7 @@ public class RegenCommand extends Command {
             game.reset();
             MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Reset the game.");
 
+            return CommandResult.SUCCESS;
         }
 
         return CommandResult.INVALID_USAGE;

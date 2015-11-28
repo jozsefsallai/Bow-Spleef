@@ -27,7 +27,9 @@ public class Commands {
 
     public static void displayCommands(Player player){
         for (Command command : commandList){
-            MessageManager.msg(MessageManager.MessageType.SUB_INFO, player, command.getDisplayUsage());
+            if (player.hasPermission(command.getPermission())){
+                MessageManager.msg(MessageManager.MessageType.SUB_INFO, player, command.getDisplayUsage());
+            }
         }
     }
 

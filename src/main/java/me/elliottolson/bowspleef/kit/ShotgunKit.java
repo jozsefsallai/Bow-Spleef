@@ -35,7 +35,7 @@ public class ShotgunKit extends Kit {
 
     @Override
     public int getCost() {
-        return 1250;
+        return 625;
     }
 
     @Override

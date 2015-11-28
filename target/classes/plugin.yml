@@ -6,3 +6,20 @@ main: me.elliottolson.bowspleef.BowSpleef
 commands:
  bs:
 
+permissions:
+ bowspleef.admin.*:
+  description: Gives access to all BowSpleef admin commands.
+  default: op
+  children:
+   bowspleef.admin.game.create: true
+   bowspleef.admin.game.delete: true
+   bowspleef.admin.game.reset: true
+   bowspleef.admin.game.set: true
+ bowspleef.player.*:
+  description: Gives access to basic BowSpleef commands and features.
+  default: true
+  children:
+   bowspleef.player.game.join: true
+   bowspleef.player.game.leave: true
+   bowspleef.player.game.vote: true
+   bowspleef.player.help: true

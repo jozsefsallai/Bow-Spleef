@@ -19,12 +19,6 @@ public class GameManager {
     private static GameManager instance;
     private List<Game> games = new ArrayList<Game>();
 
-    //TODO: Load Games, Load Kits, and Player checks
-
-    public void setup(){
-
-    }
-
     public void loadGames(){
         games.clear();
 

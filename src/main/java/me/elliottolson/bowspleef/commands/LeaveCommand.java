@@ -32,9 +32,11 @@ public class LeaveCommand extends Command {
             if (game != null){
 
                 game.removePlayer(player);
+                return CommandResult.SUCCESS;
 
             } else {
                 MessageManager.msg(MessageManager.MessageType.ERROR, player, "You are currently not in a game.");
+                return CommandResult.FAIL;
             }
 
         }

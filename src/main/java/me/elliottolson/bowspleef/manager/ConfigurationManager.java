@@ -49,6 +49,22 @@ public class ConfigurationManager {
         }
     }
 
+    public static void loadStatConfig(){
+        try {
+            statisticsConfig.load(statistics);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveStatConfig(){
+        try {
+            statisticsConfig.save(statistics);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public static FileConfiguration getArenaConfig() {
         return arenaConfig;
     }

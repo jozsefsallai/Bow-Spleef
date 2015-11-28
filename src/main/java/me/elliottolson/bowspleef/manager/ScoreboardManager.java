@@ -21,75 +21,73 @@ public class ScoreboardManager {
     private Game game;
 
     private org.bukkit.scoreboard.ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
-    private Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
-
-    private Objective objective = scoreboard.registerNewObjective("dummy", "dummy");
 
     public ScoreboardManager(Game game){
         this.game = game;
     }
 
     public void applyScoreboard(Player player){
-
+        Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
+        Objective objective = scoreboard.registerNewObjective("dummy", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "BOWSPLEEF");
 
         if (game.getState() == game.getState().LOBBY){
 
-            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "GAME:", 16);
-            addLine(ChatColor.WHITE + "Waiting: " + ChatColor.GREEN + game.getPlayers().size(), 15);
-            addLine(ChatColor.WHITE + "Needed: " + ChatColor.RED + game.getMinimumPlayers(), 14);
-            addLine(ChatColor.WHITE + "Votes: " + ChatColor.YELLOW + game.getVoters().size(), 13);
+            addLine(objective, ChatColor.GOLD.toString() + ChatColor.BOLD + "GAME:", 16);
+            addLine(objective, ChatColor.WHITE + "Waiting: " + ChatColor.GREEN + game.getPlayers().size(), 15);
+            addLine(objective, ChatColor.WHITE + "Needed: " + ChatColor.RED + game.getMinimumPlayers(), 14);
+            addLine(objective, ChatColor.WHITE + "Votes: " + ChatColor.YELLOW + game.getVoters().size(), 13);
 
-            addLine("", 12);
+            addLine(objective, "", 12);
 
-            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 11);
-            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 10);
-            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 9);
-            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 8);
+            addLine(objective, ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 11);
+            addLine(objective, ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 10);
+            addLine(objective, ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 9);
+            addLine(objective, ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 8);
 
         } else if (game.getState() == game.getState().STARTING){
 
-            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "GAME:", 16);
-            addLine(ChatColor.WHITE + "Waiting: " + ChatColor.GREEN + game.getPlayers().size(), 15);
-            addLine(ChatColor.WHITE + "Needed: " + ChatColor.RED + game.getMinimumPlayers(), 14);
+            addLine(objective, ChatColor.GOLD.toString() + ChatColor.BOLD + "GAME:", 16);
+            addLine(objective, ChatColor.WHITE + "Waiting: " + ChatColor.GREEN + game.getPlayers().size(), 15);
+            addLine(objective, ChatColor.WHITE + "Needed: " + ChatColor.RED + game.getMinimumPlayers(), 14);
 
-            addLine("", 13);
+            addLine(objective, "", 13);
 
-            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
-            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 15);
-            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 14);
-            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 15);
+            addLine(objective, ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
+            addLine(objective, ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 11);
+            addLine(objective, ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 10);
+            addLine(objective, ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 9);
 
         } else if (game.getState() == game.getState().SPREAD){
 
-            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "GAME:", 16);
-            addLine(ChatColor.WHITE + "Players: " + ChatColor.GREEN + game.getPlayers().size(), 15);
-            addLine(ChatColor.WHITE + "Spectators: " + ChatColor.RED + game.getSpectators().size(), 14);
+            addLine(objective, ChatColor.GOLD.toString() + ChatColor.BOLD + "GAME:", 16);
+            addLine(objective, ChatColor.WHITE + "Players: " + ChatColor.GREEN + game.getPlayers().size(), 15);
+            addLine(objective, ChatColor.WHITE + "Spectators: " + ChatColor.RED + game.getSpectators().size(), 14);
 
-            addLine("", 13);
+            addLine(objective, "", 13);
 
-            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
-            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 15);
-            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 14);
-            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 15);
+            addLine(objective, ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
+            addLine(objective, ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 11);
+            addLine(objective, ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 10);
+            addLine(objective, ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 9);
 
         } else if (game.getState() == game.getState().INGAME){
 
-            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "GAME:", 16);
-            addLine(ChatColor.WHITE + "Players: " + ChatColor.GREEN + game.getPlayers().size(), 15);
-            addLine(ChatColor.WHITE + "Spectators: " + ChatColor.RED + game.getSpectators().size(), 14);
+            addLine(objective, ChatColor.GOLD.toString() + ChatColor.BOLD + "GAME:", 16);
+            addLine(objective, ChatColor.WHITE + "Players: " + ChatColor.GREEN + game.getPlayers().size(), 15);
+            addLine(objective, ChatColor.WHITE + "Spectators: " + ChatColor.RED + game.getSpectators().size(), 14);
 
-            addLine("", 13);
+            addLine(objective, "", 13);
 
-            addLine(ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
-            addLine(ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 15);
-            addLine(ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 14);
-            addLine(ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 15);
+            addLine(objective, ChatColor.GOLD.toString() + ChatColor.BOLD + "STATS:", 12);
+            addLine(objective, ChatColor.WHITE + "Points: " + ChatColor.YELLOW + StatManager.getPoints(player.getUniqueId()), 11);
+            addLine(objective, ChatColor.WHITE + "Wins: " + ChatColor.YELLOW + StatManager.getWins(player.getUniqueId()), 10);
+            addLine(objective, ChatColor.WHITE + "Losses: " + ChatColor.YELLOW + StatManager.getLosses(player.getUniqueId()), 9);
 
         } else {
-            addLine(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "ERROR", 16);
-            addLine(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DISPLAYING...", 15);
+            addLine(objective, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "ERROR", 16);
+            addLine(objective, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DISPLAYING...", 15);
 
         }
 
@@ -97,7 +95,7 @@ public class ScoreboardManager {
 
     }
 
-    private void addLine(String text, int value){
+    private void addLine(Objective objective, String text, int value){
         Score score = objective.getScore(text);
         score.setScore(value);
     }

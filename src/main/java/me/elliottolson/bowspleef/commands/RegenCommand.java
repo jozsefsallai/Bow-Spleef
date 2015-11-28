@@ -30,7 +30,7 @@ public class RegenCommand extends Command {
             String gameName = getArgs().get(1);
             Game game = GameManager.getInstance().getGame(gameName);
 
-            game.reset();
+            game.regen();
             MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Reset the game.");
 
             return CommandResult.SUCCESS;

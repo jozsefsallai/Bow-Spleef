@@ -1,8 +1,10 @@
 package me.elliottolson.bowspleef.listeners;
 
+import me.elliottolson.bowspleef.commands.Commands;
 import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
 import me.elliottolson.bowspleef.util.MessageManager;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,9 +12,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.*;
 
 /**
  * Copyright Elliott Olson (c) 2015. All Rights Reserved.
@@ -43,7 +44,6 @@ public class GameListener implements Listener {
             }
         }
     }
-
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e){
@@ -92,6 +92,21 @@ public class GameListener implements Listener {
 
             if (GameManager.getInstance().getPlayerGame(player) != null){
                 e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent e){
+        Player player = e.getPlayer();
+
+        if (GameManager.getInstance().getPlayerGame(player) != null){
+            Game game = GameManager.getInstance().getPlayerGame(player);
+
+            if (game.getState() == Game.GameState.INGAME){
+                if (player.getLocation().getBlockY() < game.getPos1().getBlockY()){
+                    game.removePlayer(player);
+                }
             }
         }
     }

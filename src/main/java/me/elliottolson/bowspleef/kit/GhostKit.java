@@ -9,6 +9,7 @@ import me.elliottolson.bowspleef.util.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,7 +42,7 @@ public class GhostKit extends Kit {
 
     @Override
     public int getCost() {
-        return 1250;
+        return 625;
     }
 
     @Override
@@ -56,6 +57,8 @@ public class GhostKit extends Kit {
         meta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "BOW"
                 + ChatColor.GRAY.toString() + ChatColor.ITALIC + " - Ghost");
         item.setItemMeta(meta);
+        item.addEnchantment(Enchantment.ARROW_FIRE, 1);
+        item.addEnchantment(Enchantment.ARROW_INFINITE, 1);
 
         return item;
     }

@@ -20,6 +20,7 @@ public class KitManager {
 
     public static Kit getKit(Player player){
         if (GameManager.getInstance().getPlayerGame(player) != null){
+            ConfigurationManager.loadConfig();
             String kitName = ConfigurationManager.getPlayerConfig().getString(player.getName() + ".kit");
             return getKit(kitName);
         }
@@ -35,6 +36,7 @@ public class KitManager {
             return;
 
         ConfigurationManager.getPlayerConfig().set(player.getName() + ".kit", kit.getName());
+        ConfigurationManager.saveConfig();
     }
 
     public static Kit getKit(String name){

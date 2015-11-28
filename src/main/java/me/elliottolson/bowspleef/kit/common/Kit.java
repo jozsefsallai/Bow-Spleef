@@ -1,7 +1,9 @@
 package me.elliottolson.bowspleef.kit.common;
 
 
+import me.elliottolson.bowspleef.game.GameManager;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
+import me.elliottolson.bowspleef.manager.StatManager;
 import me.elliottolson.bowspleef.util.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -39,22 +41,26 @@ public abstract class Kit {
     //Info
     public void give(Player player){
         if (isBought(player)){
-            //TGive armour
-            player.getInventory().setHelmet(getArmour().getHelmet());;
-            player.getInventory().setChestplate(getArmour().getChestplate());;
-            player.getInventory().setLeggings(getArmour().getLeggings());;
-            player.getInventory().setBoots(getArmour().getBoots());;
+            //Give armour
+            if (getArmour() != null){
+                player.getInventory().setHelmet(getArmour().getHelmet());
+                player.getInventory().setChestplate(getArmour().getChestplate());
+                player.getInventory().setLeggings(getArmour().getLeggings());
+                player.getInventory().setBoots(getArmour().getBoots());
+            }
 
             if (getBow() != null) player.getInventory().setItem(0, getBow());
             if (getSpecialItem() != null) player.getInventory().setItem(2, getSpecialItem());
 
             player.getInventory().setItem(8, new ItemStack(Material.ARROW));
 
-            if (getItems().size() > 0){
-                for (int i = 0; i < getItems().size(); i++){
-                    int slot = 9;
-                    player.getInventory().setItem(slot, getItems().get(i));
-                    slot++;
+            if (getItems() != null){
+                if (getItems().size() > 0){
+                    for (int i = 0; i < getItems().size(); i++){
+                        int slot = 9;
+                        player.getInventory().setItem(slot, getItems().get(i));
+                        slot++;
+                    }
                 }
             }
 
@@ -64,17 +70,21 @@ public abstract class Kit {
 
     public void buy(Player player){
         if (!isBought(player)){
-            if (ConfigurationManager.getPlayerConfig().getInt(player.getUniqueId().toString() + ".points") >= getCost()){
+            if (StatManager.getPoints(player.getUniqueId()) >= getCost()){
 
-                ConfigurationManager.getPlayerConfig().set(player.getUniqueId().toString() + ".kit." +
-                        getName() + ".owned", "yes");
+                List<String> kits = ConfigurationManager.getPlayerConfig().getStringList(player.getUniqueId() + ".kits");
+                kits.add(getName());
+                ConfigurationManager.getPlayerConfig().set(player.getUniqueId() + ".kits", kits);
 
-                int remainingFunds = ConfigurationManager.getPlayerConfig().getInt(player.getUniqueId().toString() + ".points") - getCost();
-                ConfigurationManager.getPlayerConfig().set(player.getUniqueId().toString() + ".points", remainingFunds);
+                int remainingFunds = StatManager.getPoints(player.getUniqueId()) - getCost();
+                StatManager.setPoints(player.getUniqueId(), remainingFunds);
 
                 MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "You have successfully bought: " +
                         ChatColor.DARK_AQUA + getName() + ChatColor.GRAY + " for " + ChatColor.GOLD + getCost()
                         + ChatColor.GRAY + " points.");
+
+                ConfigurationManager.saveConfig();
+                GameManager.getInstance().getPlayerGame(player).updateScoreboard();
 
             } else {
                 MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have the sufficient funds to buy: "
@@ -86,10 +96,13 @@ public abstract class Kit {
     }
 
     public boolean isBought(Player player){
+        ConfigurationManager.loadConfig();
         List<String> kits = ConfigurationManager.getPlayerConfig().getStringList(player.getUniqueId() + ".kits");
+
         if (kits.contains(getName())){
             return true;
         }
+
         return false;
     }
 

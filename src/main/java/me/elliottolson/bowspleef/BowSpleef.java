@@ -3,8 +3,11 @@ package me.elliottolson.bowspleef;
 import me.elliottolson.bowspleef.commands.*;
 import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
+import me.elliottolson.bowspleef.kit.*;
 import me.elliottolson.bowspleef.kit.common.KitListener;
+import me.elliottolson.bowspleef.kit.common.KitManager;
 import me.elliottolson.bowspleef.listeners.GameListener;
+import me.elliottolson.bowspleef.listeners.SignListener;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.manager.StatisticCollection;
 import me.elliottolson.bowspleef.util.Metrics;
@@ -30,6 +33,9 @@ public class BowSpleef extends JavaPlugin {
         /////////////////////////////////////////
         //               Config                //
         /////////////////////////////////////////
+        if (ConfigurationManager.getConfigConfig() == null){
+            ConfigurationManager.saveConfig();
+        }
         ConfigurationManager.loadConfig();
 
         /////////////////////////////////////////
@@ -41,8 +47,8 @@ public class BowSpleef extends JavaPlugin {
         Commands.getCommandList().add(new DeleteCommand());
         Commands.getCommandList().add(new JoinCommand());
         Commands.getCommandList().add(new LeaveCommand());
-        Commands.getCommandList().add(new SetCommand());
         Commands.getCommandList().add(new VoteCommand());
+        Commands.getCommandList().add(new SetCommand());
         Commands.getCommandList().add(new RegenCommand());
 
         /////////////////////////////////////////
@@ -50,11 +56,21 @@ public class BowSpleef extends JavaPlugin {
         /////////////////////////////////////////
         getServer().getPluginManager().registerEvents(new GameListener(), this);
         getServer().getPluginManager().registerEvents(new KitListener(), this);
+        getServer().getPluginManager().registerEvents(new SignListener(), this);
+        getServer().getPluginManager().registerEvents(new KitListener(), this);
 
         /////////////////////////////////////////
         //               Games                 //
         /////////////////////////////////////////
         GameManager.getInstance().loadGames();
+
+        /////////////////////////////////////////
+        //                Kits                 //
+        /////////////////////////////////////////
+        KitManager.getKits.add(new ClassicKit());
+        KitManager.getKits.add(new JumperKit());
+        KitManager.getKits.add(new BoltKit());
+        KitManager.getKits.add(new GhostKit());
 
         try {
             metrics = new Metrics(this);

@@ -17,6 +17,7 @@ public class HelpCommand extends Command {
         setBePlayer(true);
         setPermission("bowspleef.player.help");
         setUsage("");
+        setDescription("View BowSpleef commands.");
     }
 
     @Override

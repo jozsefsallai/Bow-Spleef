@@ -2,6 +2,7 @@ package me.elliottolson.bowspleef.commands;
 
 import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
+import me.elliottolson.bowspleef.util.MessageManager;
 
 /**
  * Copyright Elliott Olson (c) 2015. All Rights Reserved.
@@ -27,7 +28,13 @@ public class VoteCommand extends Command {
         if (getArgs().size() == 1){
 
             Game game = GameManager.getInstance().getPlayerGame(player);
-            game.vote(player);
+
+            if (game != null){
+                game.vote(player);
+            } else {
+                MessageManager.msg(MessageManager.MessageType.ERROR, player, "You must be in a game to vote.");
+                return CommandResult.FAIL;
+            }
 
             return CommandResult.SUCCESS;
 

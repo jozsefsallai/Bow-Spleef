@@ -105,8 +105,6 @@ public class Game {
 
             players.add(player);
 
-            //TODO: Achievements
-
             //Kits
             KitManager.setKit(player, KitManager.getKit("classic"));
 
@@ -117,7 +115,6 @@ public class Game {
             item.setItemMeta(itemMeta);
             player.getInventory().setItem(4, item);
             player.updateInventory();
-
 
             //Economy and Points
             if (!ConfigurationManager.getStatisticsConfig().contains(player.getUniqueId().toString())){
@@ -414,13 +411,11 @@ public class Game {
     }
 
     public void updateScoreboard(){
-        for (Player player : players){
+        for (Player player : players)
             scoreboardManager.applyScoreboard(player);
-        }
 
-        for (Player player : spectators){
+        for (Player player : spectators)
             scoreboardManager.applyScoreboard(player);
-        }
     }
 
     public void enable(){
@@ -452,8 +447,8 @@ public class Game {
         //Load all arena values
         FileConfiguration arenaConfig = ConfigurationManager.getArenaConfig();
 
-        for (GameState state : GameState.values()){
-            if (state.equals(arenaConfig.getString("arenas." + name + ".game-state"))){
+        for (GameState state : GameState.values()) {
+            if (state.equals(arenaConfig.getString("arenas." + name + ".game-state"))) {
                 setState(state);
             }
         }
@@ -461,19 +456,19 @@ public class Game {
         setMinimumPlayers(arenaConfig.getInt("arenas." + name + ".minimum-players"));
         setMaximumPlayers(arenaConfig.getInt("arenas." + name + ".maximum-players"));
 
-        for (String name : arenaConfig.getStringList("arenas." + getName() + ".players")){
+        for (String name : arenaConfig.getStringList("arenas." + getName() + ".players")) {
             players.add(Bukkit.getPlayer(name));
         }
 
-        for (String name : arenaConfig.getStringList("arenas." + getName() + ".spectators")){
+        for (String name : arenaConfig.getStringList("arenas." + getName() + ".spectators")) {
             spectators.add(Bukkit.getPlayer(name));
         }
 
-        for (String name : arenaConfig.getStringList("arenas." + getName() + ".voters")){
+        for (String name : arenaConfig.getStringList("arenas." + getName() + ".voters")) {
             voters.add(Bukkit.getPlayer(name));
         }
 
-        if (arenaConfig.contains("arenas." + name + ".lobby.x")){
+        if (arenaConfig.contains("arenas." + name + ".lobby.x")) {
             int x = arenaConfig.getInt("arenas." + name + ".lobby.x");
             int y = arenaConfig.getInt("arenas." + name + ".lobby.y");
             int z = arenaConfig.getInt("arenas." + name + ".lobby.z");
@@ -704,38 +699,71 @@ public class Game {
         updateScoreboard();
     }
 
+    /**
+     * Returns a list of the current players within this instance of a game.
+     * @return A list of current players.
+     */
     public List<Player> getPlayers() {
         return players;
     }
 
+    /**
+     * Returns a list of the current spectators within this instance of a game.
+     * @return A list of current spectators.
+     */
     public List<Player> getSpectators() {
         return spectators;
     }
 
+    /**
+     * Returns a list of the current players who have voted to start this instance of a game.
+     * @return A list of the players who have voted.
+     */
     public List<Player> getVoters() {
         return voters;
     }
 
+    /**
+     * Sets this Game to use the specified list to handle current players.
+     * @param players The new List to be used to handle current players.
+     */
     public void setPlayers(List<Player> players) {
         this.players = players;
     }
 
+    /**
+     * Sets this Game to use the specified list to handle current spectators.
+     * @param spectators The new List to be used to handle current spectators.
+     */
     public void setSpectators(List<Player> spectators) {
         this.spectators = spectators;
     }
 
+    /**
+     * Sets this Game to use the specified list to handle voters.
+     * @param voters The new List to be used to handle votes.
+     */
     public void setVoters(List<Player> voters) {
         this.voters = voters;
     }
 
+    /**
+     * Returns the maximum amount of players who can be in a game as it starts.
+     * @return The maximum amount of players who can join a game.
+     */
     public int getMaximumPlayers() {
         return maximumPlayers;
     }
+
 
     public void setMaximumPlayers(int maximumPlayers) {
         this.maximumPlayers = maximumPlayers;
     }
 
+    /**
+     * Returns the minimum amount of players who can be in a game as it starts.
+     * @return The minimum amount of players who can join a game.
+     */
     public int getMinimumPlayers() {
         return minimumPlayers;
     }
@@ -744,6 +772,10 @@ public class Game {
         this.minimumPlayers = minimumPlayers;
     }
 
+    /**
+     * Returns the location of the game's lobby.
+     * @return The location of the game's lobby.
+     */
     public Location getLobby() {
         return lobby;
     }

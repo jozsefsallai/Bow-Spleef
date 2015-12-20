@@ -22,9 +22,6 @@ public class KitCooldown extends BukkitRunnable {
     }
 
     public void run() {
-        if (cooldown > 0){
-            cooldown--;
-        }
 
         if (cooldown == 0){
             Kit kit = KitManager.getKit(player);
@@ -32,5 +29,10 @@ public class KitCooldown extends BukkitRunnable {
                     + kit.getColor() + kit.getName());
             cancel();
         }
+
+        if (cooldown > 0){
+            cooldown--;
+        }
+
     }
 }

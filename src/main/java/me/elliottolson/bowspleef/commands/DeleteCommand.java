@@ -1,6 +1,5 @@
 package me.elliottolson.bowspleef.commands;
 
-import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
 
 /**

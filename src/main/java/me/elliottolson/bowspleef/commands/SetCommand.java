@@ -57,9 +57,7 @@ public class SetCommand extends Command {
                     return CommandResult.SUCCESS;
                 }
 
-            }
-
-            else {
+            } else {
 
                 if (getArgs().get(2).equalsIgnoreCase("minplayers")){
                     game.setMinimumPlayers(Integer.valueOf(getArgs().get(3)));

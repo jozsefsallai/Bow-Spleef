@@ -1,3 +1,11 @@
+/*
+ * Copyright Elliott Olson (c) 2016. All Rights Reserved.
+ * Any code contained within this document, and any associated APIs with similar brandings
+ * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
+ * claiming any contents as your own will break the terms of the license, and void any
+ * agreements with you, the third party.
+ */
+
 package me.elliottolson.bowspleef.kit.common;
 
 
@@ -12,13 +20,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-/**
- * Copyright Elliott Olson (c) 2014. All Rights Reserved.
- * Any code contained within this document, and any associated APIs with similar brandings
- * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
- * claiming any contents as your own will break the terms of the license, and void any
- * agreements with you, the third party.
- */
 public abstract class Kit {
 
     public abstract String getName();
@@ -26,8 +27,6 @@ public abstract class Kit {
     public abstract ItemStack getIcon();
 
     public abstract int getCost();
-
-    public abstract ArmourSet getArmour();
 
     public abstract ItemStack getBow();
     public abstract ItemStack getSpecialItem();
@@ -41,14 +40,6 @@ public abstract class Kit {
     //Info
     public void give(Player player){
         if (isBought(player)){
-            //Give armour
-            if (getArmour() != null){
-                player.getInventory().setHelmet(getArmour().getHelmet());
-                player.getInventory().setChestplate(getArmour().getChestplate());
-                player.getInventory().setLeggings(getArmour().getLeggings());
-                player.getInventory().setBoots(getArmour().getBoots());
-            }
-
             if (getBow() != null) player.getInventory().setItem(0, getBow());
             if (getSpecialItem() != null) player.getInventory().setItem(2, getSpecialItem());
 

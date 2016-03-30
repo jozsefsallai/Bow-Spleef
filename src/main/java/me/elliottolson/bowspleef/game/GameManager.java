@@ -1,19 +1,21 @@
-package me.elliottolson.bowspleef.game;
-
-import me.elliottolson.bowspleef.manager.ConfigurationManager;
-import me.elliottolson.bowspleef.util.MessageManager;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Copyright Elliott Olson (c) 2015. All Rights Reserved.
+/*
+ * Copyright Elliott Olson (c) 2016. All Rights Reserved.
  * Any code contained within this document, and any associated APIs with similar brandings
  * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
  * claiming any contents as your own will break the terms of the license, and void any
  * agreements with you, the third party.
  */
+
+package me.elliottolson.bowspleef.game;
+
+import me.elliottolson.bowspleef.manager.ConfigurationManager;
+import me.elliottolson.bowspleef.util.MessageManager;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameManager {
 
     private static GameManager instance;
@@ -37,13 +39,15 @@ public class GameManager {
     }
 
     public void createGame(String name, Player player){
+        FileConfiguration file = ConfigurationManager.getLanguageConfig();
+
         if (!player.hasPermission("bowspleef.admin.game.create")){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to create a game.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, file.getString("language.gameCreateNoPermission"));
             return;
         }
 
         if (getGame(name) != null){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "This game already exists.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, file.getString("language.gameExists"));
             return;
         }
 
@@ -54,17 +58,19 @@ public class GameManager {
         game.setState(Game.GameState.NOTSETUP);
         games.add(game);
 
-        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "This game was created.");
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, file.getString("language.gameCreated"));
     }
 
     public void deleteGame(String name, Player player){
+        FileConfiguration file = ConfigurationManager.getLanguageConfig();
+
         if (!player.hasPermission("bowspleef.admin.game.delete")){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to delete a game.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, file.getString("language.gameDeleteNoPermission"));
             return;
         }
 
         if (getGame(name) == null){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "This game doesn't exist.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, file.getString("language.gameDoesntExist"));
             return;
         }
 
@@ -73,7 +79,7 @@ public class GameManager {
         if (ConfigurationManager.getArenaConfig().contains("arenas." + name))
             ConfigurationManager.getArenaConfig().set("arenas." + name, null);
 
-        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "This game was deleted.");
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, file.getString("language.gameDeleted"));
     }
 
     public Game getPlayerGame(Player player){

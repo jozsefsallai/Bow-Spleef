@@ -1,10 +1,17 @@
+/*
+ * Copyright Elliott Olson (c) 2016. All Rights Reserved.
+ * Any code contained within this document, and any associated APIs with similar brandings
+ * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
+ * claiming any contents as your own will break the terms of the license, and void any
+ * agreements with you, the third party.
+ */
+
 package me.elliottolson.bowspleef.listeners;
 
-import me.elliottolson.bowspleef.commands.Commands;
 import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
 import me.elliottolson.bowspleef.util.MessageManager;
-import org.bukkit.entity.Arrow;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,17 +19,31 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 
-/**
- * Copyright Elliott Olson (c) 2015. All Rights Reserved.
- * Any code contained within this document, and any associated APIs with similar brandings
- * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
- * claiming any contents as your own will break the terms of the license, and void any
- * agreements with you, the third party.
- */
 public class GameListener implements Listener {
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        Player player = e.getPlayer();
+
+        if (GameManager.getInstance().getPlayerGame(player) != null) {
+            Game game = GameManager.getInstance().getPlayerGame(player);
+
+            if (game.getState() == Game.GameState.INGAME || game.getState() == Game.GameState.LOBBY ||
+                    game.getState() == Game.GameState.STARTING || game.getState() == Game.GameState.SPREAD) {
+
+                if (player.getItemInHand() != null) {
+                    ItemStack item = player.getItemInHand();
+
+                    if (item.getType() == Material.BED) {
+                        game.removePlayer(player);
+                    }
+                }
+            }
+        }
+    }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e){

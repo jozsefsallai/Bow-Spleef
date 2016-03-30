@@ -1,8 +1,9 @@
-name: ${project.name}
+name: BowSpleef
 author: ElliottOlson
-version: ${project.version}
+version: '1.4.0'
 description: ${project.description}
 main: me.elliottolson.bowspleef.BowSpleef
+startup: postworld
 commands:
  bs:
 
@@ -22,4 +23,5 @@ permissions:
    bowspleef.player.game.join: true
    bowspleef.player.game.leave: true
    bowspleef.player.game.vote: true
+   bowspleef.player.game.list: true
    bowspleef.player.help: true

@@ -1,41 +1,47 @@
-package me.elliottolson.bowspleef;
-
-import me.elliottolson.bowspleef.commands.*;
-import me.elliottolson.bowspleef.game.Game;
-import me.elliottolson.bowspleef.game.GameManager;
-import me.elliottolson.bowspleef.kit.*;
-import me.elliottolson.bowspleef.kit.common.KitListener;
-import me.elliottolson.bowspleef.kit.common.KitManager;
-import me.elliottolson.bowspleef.listeners.GameListener;
-import me.elliottolson.bowspleef.listeners.SignListener;
-import me.elliottolson.bowspleef.manager.ConfigurationManager;
-import me.elliottolson.bowspleef.manager.StatisticCollection;
-import me.elliottolson.bowspleef.util.Metrics;
-import org.bukkit.plugin.java.JavaPlugin;
-
-/**
- * Copyright Elliott Olson (c) 2015. All Rights Reserved.
+/*
+ * Copyright Elliott Olson (c) 2016. All Rights Reserved.
  * Any code contained within this document, and any associated APIs with similar brandings
  * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
  * claiming any contents as your own will break the terms of the license, and void any
  * agreements with you, the third party.
  */
+
+package me.elliottolson.bowspleef;
+
+import me.elliottolson.bowspleef.commands.*;
+import me.elliottolson.bowspleef.game.Game;
+import me.elliottolson.bowspleef.game.GameManager;
+import me.elliottolson.bowspleef.kit.BoltKit;
+import me.elliottolson.bowspleef.kit.ClassicKit;
+import me.elliottolson.bowspleef.kit.GhostKit;
+import me.elliottolson.bowspleef.kit.JumperKit;
+import me.elliottolson.bowspleef.kit.common.KitListener;
+import me.elliottolson.bowspleef.kit.common.KitManager;
+import me.elliottolson.bowspleef.listeners.GameListener;
+import me.elliottolson.bowspleef.listeners.SignListener;
+import me.elliottolson.bowspleef.manager.ConfigurationManager;
+import me.elliottolson.bowspleef.util.Language;
+import me.elliottolson.bowspleef.util.Metrics;
+import me.elliottolson.bowspleef.util.Updater;
+import org.bukkit.plugin.java.JavaPlugin;
+
 public class BowSpleef extends JavaPlugin {
 
     private static BowSpleef instance;
     private Metrics metrics;
+    private Updater updater;
+
+    private final String PLUGIN_VERSION = "1.4.0";
 
     @Override
     public void onEnable() {
-        getLogger().info("BowSpleef Version: 1.3.0 is enabling...'");
+        getLogger().info("BowSpleef Version: " + PLUGIN_VERSION + " is enabling...'");
         instance = this;
 
         /////////////////////////////////////////
         //               Config                //
         /////////////////////////////////////////
-        if (ConfigurationManager.getConfigConfig() == null){
-            ConfigurationManager.saveConfig();
-        }
+        Language.setupLanguage();
         ConfigurationManager.loadConfig();
 
         /////////////////////////////////////////
@@ -50,6 +56,7 @@ public class BowSpleef extends JavaPlugin {
         Commands.getCommandList().add(new VoteCommand());
         Commands.getCommandList().add(new SetCommand());
         Commands.getCommandList().add(new RegenCommand());
+        Commands.getCommandList().add(new ListCommand());
 
         /////////////////////////////////////////
         //              Listeners              //
@@ -74,18 +81,26 @@ public class BowSpleef extends JavaPlugin {
 
         try {
             metrics = new Metrics(this);
-            new StatisticCollection(this).createGraph();
             metrics.start();
         } catch (Exception e){
             e.printStackTrace();
         }
 
-        getLogger().info("BowSpleef Version: 1.3.0 is enabled!");
+        if (ConfigurationManager.getConfigConfig().getBoolean("update.status")){
+            updater = new Updater(this, 56977, getFile(), Updater.UpdateType.NO_VERSION_CHECK, false);
+        } else {
+            updater = new Updater(this, 56977, getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
+            if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE){
+                getLogger().info("[BowSpleef] New update available! - " + updater.getLatestName());
+            }
+        }
+
+        getLogger().info("BowSpleef Version: " + PLUGIN_VERSION + " is enabled!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("BowSpleef Version: 1.3.0 is disabling...");
+        getLogger().info("BowSpleef Version: " + PLUGIN_VERSION + " is disabling...");
 
         for (Game game : GameManager.getInstance().getGames()){
             game.save();
@@ -95,7 +110,7 @@ public class BowSpleef extends JavaPlugin {
 
         ConfigurationManager.saveConfig();
 
-        getLogger().info("BowSpleef Version: 1.3.0 is disabled!");
+        getLogger().info("BowSpleef Version: " + PLUGIN_VERSION + " is disabled!");
     }
 
     public static BowSpleef getInstance() {

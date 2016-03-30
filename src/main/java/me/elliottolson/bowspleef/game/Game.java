@@ -1,3 +1,11 @@
+/*
+ * Copyright Elliott Olson (c) 2016. All Rights Reserved.
+ * Any code contained within this document, and any associated APIs with similar brandings
+ * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
+ * claiming any contents as your own will break the terms of the license, and void any
+ * agreements with you, the third party.
+ */
+
 package me.elliottolson.bowspleef.game;
 
 import me.elliottolson.bowspleef.BowSpleef;
@@ -21,16 +29,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Copyright Elliott Olson (c) 2015. All Rights Reserved.
- * Any code contained within this document, and any associated APIs with similar brandings
- * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
- * claiming any contents as your own will break the terms of the license, and void any
- * agreements with you, the third party.
- */
 public class Game {
 
     private ScoreboardManager scoreboardManager;
+    private FileConfiguration languageConfig;
 
     private String name;
     private GameState state = GameState.NOTSETUP;
@@ -50,28 +52,29 @@ public class Game {
     public Game(String name) {
         this.name = name;
         scoreboardManager = new ScoreboardManager(this);
+        languageConfig = ConfigurationManager.getLanguageConfig();
     }
 
     public void addPlayer(Player player){
         if (!player.hasPermission("bowspleef.player.game.join")){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to join a game.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.noPermission"));
             return;
         }
 
         if (getState() == GameState.NOTSETUP){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "This game is not setup.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.notSetup"));
             return;
         }
 
         if (GameManager.getInstance().getPlayerGame(player) != null){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You cannot be in multiple games.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.alreadyInGame"));
             return;
         }
 
         if (getState() == GameState.LOBBY || getState() == GameState.STARTING){
 
             if (players.size() == maximumPlayers){
-                MessageManager.msg(MessageManager.MessageType.ERROR, player, "This game is already full.");
+                MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.fullGame"));
                 return;
             }
 
@@ -114,7 +117,15 @@ public class Game {
                     + " - " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "(Right Click)");
             item.setItemMeta(itemMeta);
             player.getInventory().setItem(4, item);
+
+            ItemStack leaveItem = new ItemStack(Material.BED);
+            ItemMeta meta = leaveItem.getItemMeta();
+            meta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "LEAVE GAME" + ChatColor.DARK_GRAY
+                    + " - " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "(Right Click)");
+            leaveItem.setItemMeta(meta);
+            player.getInventory().setItem(8, leaveItem);
             player.updateInventory();
+
 
             //Economy and Points
             if (!ConfigurationManager.getStatisticsConfig().contains(player.getUniqueId().toString())){
@@ -143,7 +154,7 @@ public class Game {
 
             if (players.size() == getMinimumPlayers()){
                 if (getState() == GameState.LOBBY){
-                    msgAll(MessageManager.MessageType.INFO, "Minimum player count reached!");
+                    msgAll(MessageManager.MessageType.INFO, languageConfig.getString("language.minimumPlayersReached"));
                     start();
                 }
             }
@@ -176,6 +187,14 @@ public class Game {
                 player.getInventory().clear();
                 player.updateInventory();
 
+                ItemStack leaveItem = new ItemStack(Material.BED);
+                ItemMeta meta = leaveItem.getItemMeta();
+                meta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "LEAVE GAME" + ChatColor.DARK_GRAY
+                        + " - " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "(Right Click)");
+                leaveItem.setItemMeta(meta);
+                player.getInventory().setItem(8, leaveItem);
+                player.updateInventory();
+
                 player.teleport(spectatorSpawn);
 
                 GameSpectateEvent event = new GameSpectateEvent(player, this);
@@ -196,15 +215,15 @@ public class Game {
                 updateSign();
                 updateScoreboard();
             } else {
-                MessageManager.msg(MessageManager.MessageType.ERROR, player, "The spectating spawn hasn't been set up.");
+                MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.specSpawnNotSetup"));
             }
 
         } else {
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You cannot join the game at this time.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.cantJoinGame"));
         }
     }
 
-    public void removePlayer(Player player){
+    public void removePlayer(Player player) {
         FileConfiguration playerConfig = ConfigurationManager.getPlayerConfig();
 
         int gamemode = playerConfig.getInt(player.getName() + ".return.gamemode");
@@ -232,33 +251,34 @@ public class Game {
         }
 
         if (players.contains(player)) {
-            if ((players.size() != 1) && (getState() == GameState.INGAME)) {
+            if (players.size() != 1 && getState() == GameState.INGAME) {
+                msgAll(MessageManager.MessageType.ERROR, player.getName() + ChatColor.AQUA + " has lost!");
                 MessageManager.msg(MessageManager.MessageType.ERROR, player, "You have lost this round of BowSpleef.");
-                StatManager.setLosses(player.getUniqueId(), StatManager.getLosses(player.getUniqueId()) + 1);
+
                 MessageManager.msg(MessageManager.MessageType.INFO, player, "Summary of game: ");
                 MessageManager.msg(MessageManager.MessageType.SUB_INFO, player, "Participation: " + ChatColor.GOLD + "+10 points");
                 MessageManager.msg(MessageManager.MessageType.SUB_INFO, player, "Place: " + ChatColor.GOLD + Language.ordinal(players.size()));
 
+                StatManager.setLosses(player.getUniqueId(), StatManager.getLosses(player.getUniqueId()) + 1);
+                StatManager.setPoints(player.getUniqueId(), StatManager.getPoints(player.getUniqueId()) + 10);
+            } else if (players.size() == 1 && getState() == GameState.INGAME) {
+                MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "You won this round of BowSpleef!");
+
+                MessageManager.msg(MessageManager.MessageType.INFO, player, "Summary of game: ");
+                MessageManager.msg(MessageManager.MessageType.SUB_INFO, player, "Participation: " + ChatColor.GOLD + "+10 points");
+                MessageManager.msg(MessageManager.MessageType.SUB_INFO, player, "Win: " + ChatColor.GOLD + "+50 points");
+
+                StatManager.setWins(player.getUniqueId(), StatManager.getWins(player.getUniqueId()) + 1);
                 StatManager.setPoints(player.getUniqueId(), StatManager.getPoints(player.getUniqueId()) + 60);
             } else {
-                MessageManager.msg(MessageManager.MessageType.ERROR, player, "You have lost this round of BowSpleef.");
-                MessageManager.msg(MessageManager.MessageType.INFO, player, "Summary of game: ");
-                MessageManager.msg(MessageManager.MessageType.SUB_INFO, player, "Participation: " + ChatColor.GOLD + "+10 points");
-                MessageManager.msg(MessageManager.MessageType.SUB_INFO, player, "Place: " + ChatColor.GOLD + Language.ordinal(players.size()));
-
-                StatManager.setPoints(player.getUniqueId(), StatManager.getPoints(player.getUniqueId()) + 10);
+                MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.leftGame"));
             }
             players.remove(player);
         }
-        else {
-            spectators.remove(player);
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You have left the arena.");
-        }
 
-        if (getState() == GameState.INGAME){
-            msgAll(MessageManager.MessageType.ERROR, player.getName() + ChatColor.AQUA + " has lost!");
-        } else {
-            msgAll(MessageManager.MessageType.ERROR, player.getName() + ChatColor.AQUA + " has left the arena!");
+        if (spectators.contains(player)) {
+            spectators.remove(player);
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.leftGame"));
         }
 
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
@@ -271,17 +291,8 @@ public class Game {
         GameLeaveEvent event = new GameLeaveEvent(player, this);
         Bukkit.getServer().getPluginManager().callEvent(event);
 
-        if ((players.size() == 1) && (getState() == GameState.INGAME)) {
+        if (players.size() == 1 && getState() == GameState.INGAME) {
             Player winner = players.get(0);
-            MessageManager.msg(MessageManager.MessageType.SUCCESS, winner, "You won this round of BowSpleef!");
-
-            //Stats
-            MessageManager.msg(MessageManager.MessageType.INFO, winner, "Summary of game: ");
-            MessageManager.msg(MessageManager.MessageType.SUB_INFO, winner, "Participation: " + ChatColor.GOLD + "+10 points");
-            MessageManager.msg(MessageManager.MessageType.SUB_INFO, winner, "Win: " + ChatColor.GOLD + "+50 points");
-
-            StatManager.setWins(winner.getUniqueId(), StatManager.getWins(winner.getUniqueId()) + 1);
-            StatManager.setPoints(winner.getUniqueId(), StatManager.getPoints(winner.getUniqueId()) + 60);
 
             removePlayer(winner);
 
@@ -297,7 +308,7 @@ public class Game {
 
     public void vote(Player player){
         if (!player.hasPermission("bowspleef.player.game.vote")){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to vote.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.voteNoPermission"));
             return;
         }
 
@@ -306,17 +317,17 @@ public class Game {
         }
 
         if (getState() != GameState.LOBBY){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You are unable to vote at this time.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.voteError"));
             return;
         }
 
         if (voters.contains(player)){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You have already voted once.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.votedAlready"));
             return;
         }
 
         voters.add(player);
-        MessageManager.msg(MessageManager.MessageType.INFO, player, "You have voted to start the game.");
+        MessageManager.msg(MessageManager.MessageType.INFO, player, languageConfig.getString("language.voteSuccess"));
 
         GameVoteEvent event = new GameVoteEvent(player, this);
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -348,7 +359,7 @@ public class Game {
 
         new GameCountdown(this).runTaskTimer(BowSpleef.getInstance(), 0L, 20L);
 
-        msgAll(MessageManager.MessageType.INFO, "This game will begin soon...");
+        msgAll(MessageManager.MessageType.INFO, languageConfig.getString("language.gameStarting"));
     }
 
     public void end(){
@@ -587,52 +598,52 @@ public class Game {
 
     public void setPos1(Player player){
         if (!player.hasPermission("bowspleef.admin.game.set")){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to set this location.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.setLocationNoPermission"));
             return;
         }
 
         pos1 = player.getLocation();
-        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Location set.");
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, languageConfig.getString("language.setLocation"));
     }
 
     public void setPos2(Player player){
         if (!player.hasPermission("bowspleef.admin.game.set")){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to set this location.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.setLocationNoPermission"));
             return;
         }
 
         pos2 = player.getLocation();
-        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Location set.");
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, languageConfig.getString("language.setLocation"));
     }
 
     public void setLobby(Player player){
         if (!player.hasPermission("bowspleef.admin.game.set")){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to set this location.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.setLocationNoPermission"));
             return;
         }
 
         lobby = player.getLocation();
-        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Location set.");
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, languageConfig.getString("language.setLocation"));
     }
 
     public void setGameSpawn(Player player){
         if (!player.hasPermission("bowspleef.admin.game.set")){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to set this location.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.setLocationNoPermission"));
             return;
         }
 
         spawn = player.getLocation();
-        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Location set.");
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, languageConfig.getString("language.setLocation"));
     }
 
     public void setSpectatorSpawn(Player player){
         if (!player.hasPermission("bowspleef.admin.game.set")){
-            MessageManager.msg(MessageManager.MessageType.ERROR, player, "You do not have permission to set this location.");
+            MessageManager.msg(MessageManager.MessageType.ERROR, player, languageConfig.getString("language.setLocationNoPermission"));
             return;
         }
 
         spectatorSpawn = player.getLocation();
-        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, "Location set.");
+        MessageManager.msg(MessageManager.MessageType.SUCCESS, player, languageConfig.getString("language.setLocation"));
     }
 
     public void msgAll(MessageManager.MessageType type, String message){

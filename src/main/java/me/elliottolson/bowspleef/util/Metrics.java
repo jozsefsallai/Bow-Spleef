@@ -1,11 +1,3 @@
-/*
- * Copyright Elliott Olson (c) 2016. All Rights Reserved.
- * Any code contained within this document, and any associated APIs with similar brandings
- * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
- * claiming any contents as your own will break the terms of the license, and void any
- * agreements with you, the third party.
- */
-
 package me.elliottolson.bowspleef.util;
 
 import me.elliottolson.bowspleef.BowSpleef;
@@ -276,7 +268,7 @@ public class Metrics {
 
         json.append('}');
 
-        URL url = new URL(new StringBuilder().append("http://report.mcstats.org").append(String.format("/plugin/%s", new Object[] { urlEncode(pluginName) })).toString());
+        URL url = new URL(new StringBuilder().append("http://report.mcstats.org").append(String.format("/plugin/%s", urlEncode(pluginName))).toString());
         URLConnection connection;
         if (isMineshafterPresent())
             connection = url.openConnection(Proxy.NO_PROXY);
@@ -364,9 +356,7 @@ public class Metrics {
         return false;
     }
 
-    private static void appendJSONPair(StringBuilder json, String key, String value)
-            throws UnsupportedEncodingException
-    {
+    private static void appendJSONPair(StringBuilder json, String key, String value) {
         boolean isValueNumeric = false;
         try
         {

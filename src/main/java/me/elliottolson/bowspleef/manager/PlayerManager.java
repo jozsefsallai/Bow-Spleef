@@ -10,6 +10,7 @@ package me.elliottolson.bowspleef.manager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -28,7 +29,7 @@ public class PlayerManager {
             if (is != null) {
                 String serializedItemStack = new String();
 
-                String isType = String.valueOf(is.getType().getId());
+                String isType = String.valueOf(is.getType().name());
                 serializedItemStack += "t@" + isType;
 
                 if (is.getDurability() != 0) {
@@ -44,7 +45,7 @@ public class PlayerManager {
                 Map<Enchantment,Integer> isEnch = is.getEnchantments();
                 if (isEnch.size() > 0) {
                     for (Map.Entry<Enchantment,Integer> ench : isEnch.entrySet()) {
-                        serializedItemStack += ":e@" + ench.getKey().getId() + "@" + ench.getValue();
+                        serializedItemStack += ":e@" + ench.getKey().getKey().toString() + "@" + ench.getValue();
                     }
                 }
 
@@ -77,14 +78,14 @@ public class PlayerManager {
             for (String itemInfo : serializedItemStack) {
                 String[] itemAttribute = itemInfo.split("@");
                 if (itemAttribute[0].equals("t")) {
-                    is = new ItemStack(Material.getMaterial(Integer.valueOf(itemAttribute[1])));
+                    is = new ItemStack(Material.getMaterial(itemAttribute[1]));
                     createdItemStack = true;
                 } else if (itemAttribute[0].equals("d") && createdItemStack) {
                     is.setDurability(Short.valueOf(itemAttribute[1]));
                 } else if (itemAttribute[0].equals("a") && createdItemStack) {
                     is.setAmount(Integer.valueOf(itemAttribute[1]));
                 } else if (itemAttribute[0].equals("e") && createdItemStack) {
-                    is.addEnchantment(Enchantment.getById(Integer.valueOf(itemAttribute[1])), Integer.valueOf(itemAttribute[2]));
+                    is.addEnchantment(Enchantment.getByKey(NamespacedKey.minecraft(itemAttribute[1])), Integer.valueOf(itemAttribute[2]));
                 }
             }
             deserializedInventory.setItem(stackPosition, is);

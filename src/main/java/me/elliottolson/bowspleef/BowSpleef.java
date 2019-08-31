@@ -1,22 +1,8 @@
-/*
- * Copyright Elliott Olson (c) 2016. All Rights Reserved.
- * Any code contained within this document, and any associated APIs with similar brandings
- * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
- * claiming any contents as your own will break the terms of the license, and void any
- * agreements with you, the third party.
- */
-
 package me.elliottolson.bowspleef;
 
 import me.elliottolson.bowspleef.commands.*;
 import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
-import me.elliottolson.bowspleef.kit.BoltKit;
-import me.elliottolson.bowspleef.kit.ClassicKit;
-import me.elliottolson.bowspleef.kit.GhostKit;
-import me.elliottolson.bowspleef.kit.JumperKit;
-import me.elliottolson.bowspleef.kit.common.KitListener;
-import me.elliottolson.bowspleef.kit.common.KitManager;
 import me.elliottolson.bowspleef.listeners.GameListener;
 import me.elliottolson.bowspleef.listeners.SignListener;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
@@ -62,22 +48,12 @@ public class BowSpleef extends JavaPlugin {
         //              Listeners              //
         /////////////////////////////////////////
         getServer().getPluginManager().registerEvents(new GameListener(), this);
-        getServer().getPluginManager().registerEvents(new KitListener(), this);
         getServer().getPluginManager().registerEvents(new SignListener(), this);
-        getServer().getPluginManager().registerEvents(new KitListener(), this);
 
         /////////////////////////////////////////
         //               Games                 //
         /////////////////////////////////////////
         GameManager.getInstance().loadGames();
-
-        /////////////////////////////////////////
-        //                Kits                 //
-        /////////////////////////////////////////
-        KitManager.getKits.add(new ClassicKit());
-        KitManager.getKits.add(new JumperKit());
-        KitManager.getKits.add(new BoltKit());
-        KitManager.getKits.add(new GhostKit());
 
         try {
             metrics = new Metrics(this);

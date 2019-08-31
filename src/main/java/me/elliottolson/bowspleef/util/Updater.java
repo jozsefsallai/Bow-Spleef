@@ -1,11 +1,3 @@
-/*
- * Copyright Elliott Olson (c) 2016. All Rights Reserved.
- * Any code contained within this document, and any associated APIs with similar brandings
- * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
- * claiming any contents as your own will break the terms of the license, and void any
- * agreements with you, the third party.
- */
-
 package me.elliottolson.bowspleef.util;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -321,7 +313,7 @@ public class Updater {
                 }
             }
             else {
-                String authorInfo = " (" + (String)this.plugin.getDescription().getAuthors().get(0) + ")";
+                String authorInfo = " (" + this.plugin.getDescription().getAuthors().get(0) + ")";
                 this.plugin.getLogger().warning("The author of this plugin" + authorInfo + " has misconfigured their Auto Update system");
                 this.plugin.getLogger().warning("File versions should follow the format 'PluginName vVERSION'");
                 this.plugin.getLogger().warning("Please notify the author of this error.");
@@ -416,25 +408,25 @@ public class Updater {
         }
     }
 
-    public static enum ReleaseType
+    public enum ReleaseType
     {
         ALPHA,
 
         BETA,
 
-        RELEASE;
+        RELEASE
     }
 
-    public static enum UpdateType
+    public enum UpdateType
     {
         DEFAULT,
 
         NO_VERSION_CHECK,
 
-        NO_DOWNLOAD;
+        NO_DOWNLOAD
     }
 
-    public static enum UpdateResult
+    public enum UpdateResult
     {
         SUCCESS,
 
@@ -452,7 +444,7 @@ public class Updater {
 
         FAIL_APIKEY,
 
-        UPDATE_AVAILABLE;
+        UPDATE_AVAILABLE
     }
 
 }

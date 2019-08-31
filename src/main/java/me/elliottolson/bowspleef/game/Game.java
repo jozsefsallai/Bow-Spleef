@@ -1,16 +1,7 @@
-/*
- * Copyright Elliott Olson (c) 2016. All Rights Reserved.
- * Any code contained within this document, and any associated APIs with similar brandings
- * are the sole property of Elliott Olson. Distribution, reproduction, taking snippits, or
- * claiming any contents as your own will break the terms of the license, and void any
- * agreements with you, the third party.
- */
-
 package me.elliottolson.bowspleef.game;
 
 import me.elliottolson.bowspleef.BowSpleef;
 import me.elliottolson.bowspleef.api.*;
-import me.elliottolson.bowspleef.kit.common.KitManager;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.manager.PlayerManager;
 import me.elliottolson.bowspleef.manager.ScoreboardManager;
@@ -108,9 +99,6 @@ public class Game {
 
             players.add(player);
 
-            //Kits
-            KitManager.setKit(player, KitManager.getKit("classic"));
-
             ItemStack item = new ItemStack(Material.IRON_SWORD);
             ItemMeta itemMeta = item.getItemMeta();
             itemMeta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "KITS" + ChatColor.DARK_GRAY
@@ -118,7 +106,7 @@ public class Game {
             item.setItemMeta(itemMeta);
             player.getInventory().setItem(4, item);
 
-            ItemStack leaveItem = new ItemStack(Material.BED);
+            ItemStack leaveItem = new ItemStack(Material.RED_BED);
             ItemMeta meta = leaveItem.getItemMeta();
             meta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "LEAVE GAME" + ChatColor.DARK_GRAY
                     + " - " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "(Right Click)");
@@ -187,7 +175,7 @@ public class Game {
                 player.getInventory().clear();
                 player.updateInventory();
 
-                ItemStack leaveItem = new ItemStack(Material.BED);
+                ItemStack leaveItem = new ItemStack(Material.RED_BED);
                 ItemMeta meta = leaveItem.getItemMeta();
                 meta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "LEAVE GAME" + ChatColor.DARK_GRAY
                         + " - " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "(Right Click)");

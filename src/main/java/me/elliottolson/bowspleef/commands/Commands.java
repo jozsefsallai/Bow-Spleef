@@ -22,8 +22,8 @@ public class Commands {
         return commandList;
     }
 
-    public static void setCommandList(List<Command> commandList) {
-        commandList = commandList;
+    public static void setCommandList(List<Command> list) {
+        commandList = list;
     }
 
     public static void displayCommands(Player player){

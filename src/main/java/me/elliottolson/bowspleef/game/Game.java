@@ -8,16 +8,16 @@
 
 package me.elliottolson.bowspleef.game;
 
-import me.elliottolson.bowspleef.BowSpleef;
-import me.elliottolson.bowspleef.api.*;
-import me.elliottolson.bowspleef.kit.common.KitManager;
-import me.elliottolson.bowspleef.manager.ConfigurationManager;
-import me.elliottolson.bowspleef.manager.PlayerManager;
-import me.elliottolson.bowspleef.manager.ScoreboardManager;
-import me.elliottolson.bowspleef.manager.StatManager;
-import me.elliottolson.bowspleef.util.Language;
-import me.elliottolson.bowspleef.util.MessageManager;
-import org.bukkit.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -25,9 +25,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import me.elliottolson.bowspleef.BowSpleef;
+import me.elliottolson.bowspleef.api.GameCountdownEvent;
+import me.elliottolson.bowspleef.api.GameJoinEvent;
+import me.elliottolson.bowspleef.api.GameLeaveEvent;
+import me.elliottolson.bowspleef.api.GameSpectateEvent;
+import me.elliottolson.bowspleef.api.GameVoteEvent;
+import me.elliottolson.bowspleef.manager.ConfigurationManager;
+import me.elliottolson.bowspleef.manager.PlayerManager;
+import me.elliottolson.bowspleef.manager.ScoreboardManager;
+import me.elliottolson.bowspleef.manager.StatManager;
+import me.elliottolson.bowspleef.util.Language;
+import me.elliottolson.bowspleef.util.MessageManager;
 
 public class Game {
 
@@ -71,6 +80,8 @@ public class Game {
             return;
         }
 
+        String playerUUID = player.getUniqueId().toString();
+
         if (getState() == GameState.LOBBY || getState() == GameState.STARTING){
 
             if (players.size() == maximumPlayers){
@@ -82,49 +93,36 @@ public class Game {
             double health = player.getHealth();
             int food = player.getFoodLevel();
 
-            ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.gamemode", gm);
-            ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.health", health);
-            ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.food", food);
-
-            player.setGameMode(GameMode.ADVENTURE);
-            player.setHealth(player.getMaxHealth());
-            player.setFoodLevel(20);
+            ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.gamemode", gm);
+            ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.health", health);
+            ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.food", food);
 
             Location returnLocation = player.getLocation();
-            ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.x", returnLocation.getBlockX());
-            ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.y", returnLocation.getBlockY());
-            ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.z", returnLocation.getBlockZ());
-            ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.world", returnLocation.getWorld().getName());
+            ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.x", returnLocation.getBlockX());
+            ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.y", returnLocation.getBlockY());
+            ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.z", returnLocation.getBlockZ());
+            ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.world", returnLocation.getWorld().getName());
 
             PlayerManager.saveInventory(player);
 
-            player.getInventory().clear();
-            player.updateInventory();
-
             player.teleport(lobby);
+
+            player.getInventory().clear();
+            player.setGameMode(GameMode.ADVENTURE);
+            player.setHealth(player.getMaxHealth());
+            player.setFoodLevel(20);
 
             GameJoinEvent event = new GameJoinEvent(player, this);
             Bukkit.getServer().getPluginManager().callEvent(event);
 
             players.add(player);
 
-            //Kits
-            KitManager.setKit(player, KitManager.getKit("classic"));
-
-            ItemStack item = new ItemStack(Material.IRON_SWORD);
-            ItemMeta itemMeta = item.getItemMeta();
-            itemMeta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "KITS" + ChatColor.DARK_GRAY
-                    + " - " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "(Right Click)");
-            item.setItemMeta(itemMeta);
-            player.getInventory().setItem(4, item);
-
-            ItemStack leaveItem = new ItemStack(Material.BED);
+            ItemStack leaveItem = new ItemStack(Material.RED_BED);
             ItemMeta meta = leaveItem.getItemMeta();
             meta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "LEAVE GAME" + ChatColor.DARK_GRAY
                     + " - " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "(Right Click)");
             leaveItem.setItemMeta(meta);
             player.getInventory().setItem(8, leaveItem);
-            player.updateInventory();
 
 
             //Economy and Points
@@ -168,32 +166,30 @@ public class Game {
                 double health = player.getHealth();
                 int food = player.getFoodLevel();
 
-                ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.gamemode", gm);
-                ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.health", health);
-                ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.food", food);
+                ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.gamemode", gm);
+                ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.health", health);
+                ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.food", food);
 
                 player.setGameMode(GameMode.ADVENTURE);
                 player.setHealth(player.getMaxHealth());
                 player.setFoodLevel(20);
 
                 Location returnLocation = player.getLocation();
-                ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.x", returnLocation.getBlockX());
-                ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.y", returnLocation.getBlockY());
-                ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.z", returnLocation.getBlockZ());
-                ConfigurationManager.getPlayerConfig().set(player.getName() + ".return.world", returnLocation.getWorld().getName());
+                ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.x", returnLocation.getBlockX());
+                ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.y", returnLocation.getBlockY());
+                ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.z", returnLocation.getBlockZ());
+                ConfigurationManager.getPlayerConfig().set(playerUUID + ".return.world", returnLocation.getWorld().getName());
 
                 PlayerManager.saveInventory(player);
 
                 player.getInventory().clear();
-                player.updateInventory();
 
-                ItemStack leaveItem = new ItemStack(Material.BED);
+                ItemStack leaveItem = new ItemStack(Material.RED_BED);
                 ItemMeta meta = leaveItem.getItemMeta();
                 meta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "LEAVE GAME" + ChatColor.DARK_GRAY
                         + " - " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "(Right Click)");
                 leaveItem.setItemMeta(meta);
                 player.getInventory().setItem(8, leaveItem);
-                player.updateInventory();
 
                 player.teleport(spectatorSpawn);
 
@@ -224,11 +220,13 @@ public class Game {
     }
 
     public void removePlayer(Player player) {
+        String playerUUID = player.getUniqueId().toString();
+
         FileConfiguration playerConfig = ConfigurationManager.getPlayerConfig();
 
-        int gamemode = playerConfig.getInt(player.getName() + ".return.gamemode");
-        double health = playerConfig.getDouble(player.getName() + ".return.health");
-        int foodLevel = playerConfig.getInt(player.getName() + ".return.food");
+        int gamemode = playerConfig.getInt(playerUUID + ".return.gamemode");
+        double health = playerConfig.getDouble(playerUUID + ".return.health");
+        int foodLevel = playerConfig.getInt(playerUUID + ".return.food");
 
         player.setGameMode(GameMode.getByValue(gamemode));
         player.setFoodLevel(foodLevel);
@@ -237,10 +235,10 @@ public class Game {
         player.getActivePotionEffects().clear();
         player.getInventory().clear();
 
-        int x = playerConfig.getInt(player.getName() + ".return.x");
-        int y = playerConfig.getInt(player.getName() + ".return.y");
-        int z = playerConfig.getInt(player.getName() + ".return.z");
-        String world = playerConfig.getString(player.getName() + ".return.world");
+        int x = playerConfig.getInt(playerUUID + ".return.x");
+        int y = playerConfig.getInt(playerUUID + ".return.y");
+        int z = playerConfig.getInt(playerUUID + ".return.z");
+        String world = playerConfig.getString(playerUUID + ".return.world");
 
         player.teleport(new Location(Bukkit.getWorld(world), x, y, z));
 
@@ -286,7 +284,7 @@ public class Game {
         updateScoreboard();
         updateSign();
 
-        playerConfig.set(player.getName(), null);
+        playerConfig.set(playerUUID, null);
 
         GameLeaveEvent event = new GameLeaveEvent(player, this);
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -468,15 +466,15 @@ public class Game {
         setMaximumPlayers(arenaConfig.getInt("arenas." + name + ".maximum-players"));
 
         for (String name : arenaConfig.getStringList("arenas." + getName() + ".players")) {
-            players.add(Bukkit.getPlayer(name));
+            players.add(Bukkit.getPlayer(UUID.fromString(name)));
         }
 
         for (String name : arenaConfig.getStringList("arenas." + getName() + ".spectators")) {
-            spectators.add(Bukkit.getPlayer(name));
+            spectators.add(Bukkit.getPlayer(UUID.fromString(name)));
         }
 
         for (String name : arenaConfig.getStringList("arenas." + getName() + ".voters")) {
-            voters.add(Bukkit.getPlayer(name));
+            voters.add(Bukkit.getPlayer(UUID.fromString(name)));
         }
 
         if (arenaConfig.contains("arenas." + name + ".lobby.x")) {
@@ -536,21 +534,21 @@ public class Game {
 
         List<String> configPlayers = new ArrayList<String>();
         for (Player p : players){
-            configPlayers.add(p.getName());
+            configPlayers.add(String.valueOf(p.getUniqueId()));
         }
 
         arenaConfig.set("arenas." + name + ".players", configPlayers);
 
         List<String> configSpectators = new ArrayList<String>();
         for (Player p : spectators){
-            configSpectators.add(p.getName());
+            configSpectators.add(String.valueOf(p.getUniqueId()));
         }
 
         arenaConfig.set("arenas." + name + ".spectators", configSpectators);
 
         List<String> configVoters = new ArrayList<String>();
         for (Player p : voters){
-            configVoters.add(p.getName());
+            configVoters.add(String.valueOf(p.getUniqueId()));
         }
 
         arenaConfig.set("arenas." + name + ".voters", configVoters);

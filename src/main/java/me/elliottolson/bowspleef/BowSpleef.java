@@ -11,12 +11,6 @@ package me.elliottolson.bowspleef;
 import me.elliottolson.bowspleef.commands.*;
 import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
-import me.elliottolson.bowspleef.kit.BoltKit;
-import me.elliottolson.bowspleef.kit.ClassicKit;
-import me.elliottolson.bowspleef.kit.GhostKit;
-import me.elliottolson.bowspleef.kit.JumperKit;
-import me.elliottolson.bowspleef.kit.common.KitListener;
-import me.elliottolson.bowspleef.kit.common.KitManager;
 import me.elliottolson.bowspleef.listeners.GameListener;
 import me.elliottolson.bowspleef.listeners.SignListener;
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
@@ -24,6 +18,7 @@ import me.elliottolson.bowspleef.util.Language;
 import me.elliottolson.bowspleef.util.Metrics;
 import me.elliottolson.bowspleef.util.Updater;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class BowSpleef extends JavaPlugin {
 
@@ -31,7 +26,7 @@ public class BowSpleef extends JavaPlugin {
     private Metrics metrics;
     private Updater updater;
 
-    private final String PLUGIN_VERSION = "1.4.0";
+    private final String PLUGIN_VERSION = "1.4.1";
 
     @Override
     public void onEnable() {
@@ -62,22 +57,18 @@ public class BowSpleef extends JavaPlugin {
         //              Listeners              //
         /////////////////////////////////////////
         getServer().getPluginManager().registerEvents(new GameListener(), this);
-        getServer().getPluginManager().registerEvents(new KitListener(), this);
         getServer().getPluginManager().registerEvents(new SignListener(), this);
-        getServer().getPluginManager().registerEvents(new KitListener(), this);
 
         /////////////////////////////////////////
         //               Games                 //
         /////////////////////////////////////////
-        GameManager.getInstance().loadGames();
+        new BukkitRunnable() {
 
-        /////////////////////////////////////////
-        //                Kits                 //
-        /////////////////////////////////////////
-        KitManager.getKits.add(new ClassicKit());
-        KitManager.getKits.add(new JumperKit());
-        KitManager.getKits.add(new BoltKit());
-        KitManager.getKits.add(new GhostKit());
+        	public void run() {
+        		GameManager.getInstance().loadGames();
+        	}
+
+        }.runTaskLater(instance, 300);
 
         try {
             metrics = new Metrics(this);

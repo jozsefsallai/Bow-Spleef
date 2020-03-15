@@ -8,91 +8,131 @@
 
 package me.elliottolson.bowspleef.manager;
 
-import org.bukkit.Bukkit;
+import java.util.Map;
+
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Map;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class PlayerManager {
 
-    public static void saveInventory(Player player){
-        Inventory inventory = player.getInventory();
-        String serialization = inventory.getSize() + ";";
-        for (int i = 0; i < inventory.getSize(); i++) {
-            ItemStack is = inventory.getItem(i);
+	private static String escapeDisplayName(String displayName) {
+		displayName = displayName.replaceAll(":", "[colon]");
+		displayName = displayName.replaceAll(";", "[semi]");
+		displayName = displayName.replaceAll("@", "[at]");
+		displayName = displayName.replaceAll("#", "[hash]");
+		return displayName;
+	}
 
-            if (is != null) {
-                String serializedItemStack = new String();
+	private static String unescapeDisplayName(String displayName) {
+		displayName = displayName.replaceAll("\\[colon\\]", ":");
+		displayName = displayName.replaceAll("\\[semi\\]", ";");
+		displayName = displayName.replaceAll("\\[at\\]", "@");
+		displayName = displayName.replaceAll("\\[hash\\]", "#");
+		return displayName;
+	}
 
-                String isType = String.valueOf(is.getType().getId());
-                serializedItemStack += "t@" + isType;
+	public static void saveInventory(Player player) {
+		Inventory inventory = player.getInventory();
+		String output = inventory.getSize() + ";";
 
-                if (is.getDurability() != 0) {
-                    String isDurability = String.valueOf(is.getDurability());
-                    serializedItemStack += ":d@" + isDurability;
-                }
+		for (int i = 0; i < inventory.getSize(); i++) {
+			ItemStack is = inventory.getItem(i);
 
-                if (is.getAmount() != 1) {
-                    String isAmount = String.valueOf(is.getAmount());
-                    serializedItemStack += ":a@" + isAmount;
-                }
+			if (is != null) {
+				String serializedItemStack = new String();
 
-                Map<Enchantment,Integer> isEnch = is.getEnchantments();
-                if (isEnch.size() > 0) {
-                    for (Map.Entry<Enchantment,Integer> ench : isEnch.entrySet()) {
-                        serializedItemStack += ":e@" + ench.getKey().getId() + "@" + ench.getValue();
-                    }
-                }
+				String type = String.valueOf(is.getType().name());
+				serializedItemStack += "t@" + type;
 
-                serialization += i + "#" + serializedItemStack + ";";
-            }
-        }
+				if (is.getDurability() != 0) {
+					String durability = String.valueOf(is.getDurability());
+					serializedItemStack += ":d@" + durability;
+				}
 
-        ConfigurationManager.getPlayerConfig().set(player.getName() + ".inventory", serialization);
-    }
+				if (is.getAmount() != 1) {
+					String amount = String.valueOf(is.getAmount());
+					serializedItemStack += ":a@" + amount;
+				}
 
-    public static void retrieveInventory(Player player){
-        String inventoryString = ConfigurationManager.getPlayerConfig().getString(player.getName() + ".inventory");
-        String[] serializedBlocks = inventoryString.split(";");
-        String invInfo = serializedBlocks[0];
-        Inventory deserializedInventory = Bukkit.getServer().createInventory(null, Integer.valueOf(invInfo));
+				if (is.getItemMeta().hasDisplayName()) {
+					String name = is.getItemMeta().getDisplayName();
+					serializedItemStack += ":n@" + escapeDisplayName(name);
+				}
 
-        for (int i = 1; i < serializedBlocks.length; i++) {
-            String[] serializedBlock = serializedBlocks[i].split("#");
-            int stackPosition = Integer.valueOf(serializedBlock[0]);
+				Map<Enchantment, Integer> enchantments = is.getEnchantments();
+				if (enchantments.size() > 0) {
+					for (Map.Entry<Enchantment, Integer> enchantment : enchantments.entrySet()) {
+						serializedItemStack += ":e@" + enchantment.getKey().getName() + "@" + enchantment.getValue();
+					}
+				}
 
-            if (stackPosition >= deserializedInventory.getSize()) {
-                continue;
-            }
+				output += i + "#" + serializedItemStack + ";";
+			}
+		}
 
-            ItemStack is = null;
-            Boolean createdItemStack = false;
+		ConfigurationManager.getPlayerConfig().set(player.getUniqueId().toString() + ".inventory", output);
+	}
 
-            String[] serializedItemStack = serializedBlock[1].split(":");
+	public static void retrieveInventory(Player player) {
+		String inventoryString = ConfigurationManager.getPlayerConfig().getString(player.getUniqueId().toString() + ".inventory");
+		String[] serializedBlocks = inventoryString.split(";");
+		Integer invSize = Integer.valueOf(serializedBlocks[0]);
 
-            for (String itemInfo : serializedItemStack) {
-                String[] itemAttribute = itemInfo.split("@");
-                if (itemAttribute[0].equals("t")) {
-                    is = new ItemStack(Material.getMaterial(Integer.valueOf(itemAttribute[1])));
-                    createdItemStack = true;
-                } else if (itemAttribute[0].equals("d") && createdItemStack) {
-                    is.setDurability(Short.valueOf(itemAttribute[1]));
-                } else if (itemAttribute[0].equals("a") && createdItemStack) {
-                    is.setAmount(Integer.valueOf(itemAttribute[1]));
-                } else if (itemAttribute[0].equals("e") && createdItemStack) {
-                    is.addEnchantment(Enchantment.getById(Integer.valueOf(itemAttribute[1])), Integer.valueOf(itemAttribute[2]));
-                }
-            }
-            deserializedInventory.setItem(stackPosition, is);
-        }
+		ItemStack[] items = new ItemStack[invSize];
 
-        player.getInventory().setContents(deserializedInventory.getContents());
-        player.updateInventory();
-    }
+		for (int i = 1; i < serializedBlocks.length; i++) {
+			String[] block = serializedBlocks[i].split("#");
+			int stackPosition = Integer.valueOf(block[0]);
 
+			if (stackPosition >= invSize) {
+				continue;
+			}
 
+			ItemStack is = null;
+			Boolean createdItemStack = false;
+
+			String[] serializedItemStack = block[1].split(":");
+
+			for (String itemInfo : serializedItemStack) {
+				String[] attr = itemInfo.split("@");
+
+				switch (attr[0]) {
+					case "t":
+						is = new ItemStack(Material.getMaterial(attr[1]));
+						createdItemStack = true;
+						break;
+					case "d":
+						if (createdItemStack) {
+							is.setDurability(Short.valueOf(attr[1]));
+						}
+						break;
+					case "a":
+						if (createdItemStack) {
+							is.setAmount(Integer.valueOf(attr[1]));
+						}
+						break;
+					case "e":
+						if (createdItemStack) {
+							is.addUnsafeEnchantment(Enchantment.getByName(attr[1]), Integer.valueOf(attr[2]));
+						}
+						break;
+					case "n":
+						if (createdItemStack) {
+							ItemMeta meta = is.getItemMeta();
+							meta.setDisplayName(unescapeDisplayName(attr[1]));
+							is.setItemMeta(meta);
+						}
+						break;
+				}
+			}
+
+			items[stackPosition] = is;
+		}
+
+		player.getInventory().setContents(items);
+	}
 }

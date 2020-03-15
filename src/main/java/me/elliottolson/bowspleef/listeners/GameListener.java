@@ -34,11 +34,12 @@ public class GameListener implements Listener {
             if (game.getState() == Game.GameState.INGAME || game.getState() == Game.GameState.LOBBY ||
                     game.getState() == Game.GameState.STARTING || game.getState() == Game.GameState.SPREAD) {
 
-                if (player.getItemInHand() != null) {
-                    ItemStack item = player.getItemInHand();
+                if (player.getItemOnCursor() != null) {
+                    ItemStack item = player.getItemOnCursor();
 
-                    if (item.getType() == Material.BED) {
-                        game.removePlayer(player);
+                    if (item.getType() == Material.RED_BED) {
+                        // game.removePlayer(player);
+                    	MessageManager.msg(MessageManager.MessageType.INFO, player, "WIP! To leave, type /bs leave.");
                     }
                 }
             }

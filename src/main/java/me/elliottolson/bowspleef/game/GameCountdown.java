@@ -8,17 +8,42 @@
 
 package me.elliottolson.bowspleef.game;
 
-import me.elliottolson.bowspleef.kit.common.KitManager;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.util.MessageManager;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class GameCountdown extends BukkitRunnable {
 
     private Game game;
     private int time;
+
+    private void giveBow(Player player) {
+        ItemStack bow = new ItemStack(Material.BOW);
+        ItemMeta meta = bow.getItemMeta();
+        meta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "BOW" + ChatColor.GRAY.toString()
+                + ChatColor.ITALIC + " - Classic");
+        bow.setItemMeta(meta);
+        bow.addEnchantment(Enchantment.ARROW_FIRE, 1);
+        bow.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+
+        player.getInventory().setItem(0, bow);
+
+        ItemStack arrow = new ItemStack(Material.ARROW);
+        arrow.setAmount(64);
+        ItemMeta arrowMeta = arrow.getItemMeta();
+        arrowMeta.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "ARROW" + ChatColor.GRAY.toString()
+                + ChatColor.ITALIC + " - Classic");
+        arrow.setItemMeta(arrowMeta);
+
+        player.getInventory().setItem(8, arrow);
+    }
 
     public GameCountdown(Game game){
         this.game = game;
@@ -63,7 +88,6 @@ public class GameCountdown extends BukkitRunnable {
 
                 for (Player player : game.getPlayers()){
                     player.getInventory().clear();
-                    player.updateInventory();
                 }
             }
 
@@ -74,8 +98,7 @@ public class GameCountdown extends BukkitRunnable {
 
             if (time == 0){
                 for (Player player : game.getPlayers()){
-                    KitManager.getKit(player).give(player);
-                    player.updateInventory();
+                    giveBow(player);
                     MessageManager.msg(MessageManager.MessageType.INFO, player, ConfigurationManager.getLanguageConfig()
                             .getString("language.gameStarted"));
                 }

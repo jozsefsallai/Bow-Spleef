@@ -9,7 +9,6 @@
 package me.elliottolson.bowspleef.api;
 
 import me.elliottolson.bowspleef.game.Game;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;

@@ -8,7 +8,20 @@
 
 package me.elliottolson.bowspleef;
 
-import me.elliottolson.bowspleef.commands.*;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import me.elliottolson.bowspleef.commands.CommandProcessor;
+import me.elliottolson.bowspleef.commands.Commands;
+import me.elliottolson.bowspleef.commands.CreateCommand;
+import me.elliottolson.bowspleef.commands.DeleteCommand;
+import me.elliottolson.bowspleef.commands.HelpCommand;
+import me.elliottolson.bowspleef.commands.JoinCommand;
+import me.elliottolson.bowspleef.commands.LeaveCommand;
+import me.elliottolson.bowspleef.commands.ListCommand;
+import me.elliottolson.bowspleef.commands.RegenCommand;
+import me.elliottolson.bowspleef.commands.SetCommand;
+import me.elliottolson.bowspleef.commands.VoteCommand;
 import me.elliottolson.bowspleef.game.Game;
 import me.elliottolson.bowspleef.game.GameManager;
 import me.elliottolson.bowspleef.listeners.GameListener;
@@ -17,8 +30,6 @@ import me.elliottolson.bowspleef.manager.ConfigurationManager;
 import me.elliottolson.bowspleef.util.Language;
 import me.elliottolson.bowspleef.util.Metrics;
 import me.elliottolson.bowspleef.util.Updater;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class BowSpleef extends JavaPlugin {
 
@@ -77,12 +88,14 @@ public class BowSpleef extends JavaPlugin {
             e.printStackTrace();
         }
 
-        if (ConfigurationManager.getConfigConfig().getBoolean("update.status")){
-            updater = new Updater(this, 56977, getFile(), Updater.UpdateType.NO_VERSION_CHECK, false);
-        } else {
-            updater = new Updater(this, 56977, getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
-            if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE){
-                getLogger().info("[BowSpleef] New update available! - " + updater.getLatestName());
+        if (ConfigurationManager.getConfigConfig().getBoolean("update.auto")) {
+            if (ConfigurationManager.getConfigConfig().getBoolean("update.status")){
+                updater = new Updater(this, 56977, getFile(), Updater.UpdateType.NO_VERSION_CHECK, false);
+            } else {
+                updater = new Updater(this, 56977, getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
+                if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE){
+                    getLogger().info("[BowSpleef] New update available! - " + updater.getLatestName());
+                }
             }
         }
 

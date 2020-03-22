@@ -58,6 +58,11 @@ public class ConfigurationManager {
                 configConfig.save(config);
             }
 
+            if (!configConfig.contains("update.auto")) {
+                configConfig.set("update.auto", false);
+                configConfig.save(config);
+            }
+
         } catch (Exception e){
             e.printStackTrace();
         }
